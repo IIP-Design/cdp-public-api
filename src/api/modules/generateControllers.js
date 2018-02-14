@@ -9,7 +9,7 @@ import Request from 'request';
 // POST v1/[resource]
 export const indexDocument = model => ( req, res, next ) => {
   controllers
-    .indexDocument( model, req.body )
+    .indexDocument( model, req )
     .then( ( doc ) => {
       // TODO: Perhaps find a better way to handle the callback?
       if ( req.headers.callback ) {
@@ -46,7 +46,7 @@ export const getDocument = model => ( req, res, next ) => {
     .catch( err => next( err ) );
 };
 
-// PUT v1/[resource]/:id
+// PUT v1/[resource]/:uuid
 export const updateDocumentById = model => async ( req, res, next ) => {
   controllers
     .updateDocumentById( model, req.body, req.params.id )
@@ -54,20 +54,32 @@ export const updateDocumentById = model => async ( req, res, next ) => {
     .catch( err => next( err ) );
 };
 
-// DELTE v1/[resource]/:id
+// DELTE v1/[resource]/:uuid
 export const deleteDocumentById = model => async ( req, res, next ) => {
-  controllers
-    .deleteDocumentById( model, req.params.id )
-    .then( doc => res.status( 200 ).json( doc ) )
+  const id = req.esDoc ? req.esDoc.id : null;
+  return controllers
+    .deleteDocumentById( model, id )
+    .then( doc => res.status( 200 ).json( doc || req.esDoc ) )
     .catch( err => next( err ) );
 };
 
-// GET v1/[resource]/:id
+// GET v1/[resource]/:uuid
 export const getDocumentById = model => ( req, res, next ) => {
-  controllers
-    .getDocumentById( model, req.params.id )
-    .then( doc => res.status( 200 ).json( doc ) )
-    .catch( err => next( err ) );
+  if ( req.esDoc ) {
+    res.status( 200 ).json( req.esDoc );
+  } else {
+    return next( new Error( `Document not found with UUID: ${req.params.uuid}` ) );
+  }
+  // controllers
+  //   .getDocumentById( model, req.params.id )
+  //   .then( doc => res.status( 200 ).json( doc ) )
+  //   .catch( err => next( err ) );
+};
+
+// Populates req.esDoc with the document specified by /:uuid if any.
+export const setRequestDoc = model => async ( req, res, next, uuid ) => {
+  if ( uuid ) await model.prepareDocument( req ).catch( err => next( err ) );
+  next();
 };
 
 export const generateControllers = ( model, overrides = {} ) => {
@@ -77,7 +89,8 @@ export const generateControllers = ( model, overrides = {} ) => {
     deleteDocument: deleteDocument( model ),
     deleteDocumentById: deleteDocumentById( model ),
     getDocument: getDocument( model ),
-    getDocumentById: getDocumentById( model )
+    getDocumentById: getDocumentById( model ),
+    setRequestDoc: setRequestDoc( model )
   };
 
   return { ...defaults, ...overrides };

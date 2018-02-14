@@ -1,8 +1,8 @@
 import { Router } from 'express';
 import download from '../modules/download';
 import aws from '../../services/amazon-aws';
-import client from '../../services/elasticsearch';
-import controllers from '../modules/elastic/controller';
+// import client from '../../services/elasticsearch';
+// import controllers from '../modules/elastic/controller';
 
 const router = new Router();
 

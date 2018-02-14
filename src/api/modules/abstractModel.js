@@ -32,13 +32,46 @@ class AbstractModel {
     throw new Error( 'Method not implemented: putAsset' );
   }
 
+  /**
+   * Populate the request with a document retreived from ElasticSearch
+   * (if any) based on UUID in the request param. Do not fail if not found
+   * as it can be handled by controllers.
+   *
+   * @param req
+   * @returns {Promise<null>}
+   */
+  async prepareDocument( req ) {
+    if ( req.params.uuid ) {
+      const args = req.params.uuid.split( '_' );
+      if ( args.length === 2 ) {
+        const site = args[0].replace( /-/g, '.' ).trim();
+        const postID = args[1];
+        const esDoc = await this.findDocumentByQuery( {
+          site,
+          post_id: postID
+        } ).then( parser.parseUniqueDocExists() );
+        if ( esDoc ) {
+          console.log( esDoc );
+          this.esAssets = this.getAssets( esDoc );
+          this.body = req.body;
+          req.esDoc = esDoc;
+        }
+      }
+    }
+    return null;
+  }
+
   async prepareDocumentForUpdate( req ) {
     // this.validateSchema( json );
 
-    const docFromES = await this.findDocumentByQuery( req.body ).then( parser.parseUniqueDocExists() ); // eslint-disable-line max-len
-    if ( docFromES ) {
-      this.esAssets = this.getAssets( docFromES._source );
-      req._id = docFromES._id;
+    if ( req.esDoc ) {
+      this.esAssets = this.getAssets( req.esDoc );
+    } else {
+      const docFromES = await this.findDocumentByQuery( req.body ).then( parser.parseUniqueDocExists() ); // eslint-disable-line max-len
+      if ( docFromES ) {
+        this.esAssets = this.getAssets( docFromES );
+        req.esDoc = docFromES;
+      }
     }
 
     this.reqAssets = this.getAssets( req.body );
@@ -49,15 +82,19 @@ class AbstractModel {
 
   async prepareDocumentForDelete( req ) {
     console.log( 'preparing for delete' );
+    this.esAssets = [];
 
-    const docFromES = await this.findDocumentByQuery( req.body ).then( parser.parseUniqueDocExists() ); // eslint-disable-line max-len
-    if ( docFromES ) {
-      console.log( 'got doc', docFromES );
-      this.esAssets = this.getAssets( docFromES._source );
-      req._id = docFromES._id;
-      this.body = docFromES._source;
+    if ( req.esDoc ) {
+      this.body = req.esDoc;
+      this.esAssets = this.getAssets( this.body );
+    } else if ( req.body ) {
+      const docFromES = await this.findDocumentByQuery( req.body ).then( parser.parseUniqueDocExists() ); // eslint-disable-line max-len
+      if ( docFromES ) {
+        this.esAssets = this.getAssets( docFromES );
+        this.body = docFromES._source;
+        req.esDoc = docFromES;
+      }
     }
-
     return this.esAssets;
   }
 
@@ -112,6 +149,10 @@ class AbstractModel {
   }
 
   async deleteDocument( id ) {
+    // If there is no ID then we don't need to do anything.
+    // Whatever document they tried to delete doesn't exist
+    // and therefore is technically already 'deleted'
+    if ( !id ) return {};
     const result = await client.delete( {
       index: this.index,
       type: this.type,

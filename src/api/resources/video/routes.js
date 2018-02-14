@@ -6,6 +6,8 @@ import asyncResponse from '../../../middleware/asyncResponse';
 
 const router = new Router();
 
+router.param( 'uuid', controller.setRequestDoc );
+
 // Route: /v1/video
 router
   .route( '/' )
@@ -13,11 +15,11 @@ router
   .get( controller.getDocument )
   .delete( deleteCtrl( VideoModel ), controller.deleteDocument );
 
-// Route: /v1/video/[id]
+// Route: /v1/video/[uuid]
 router
-  .route( '/:id' )
+  .route( '/:uuid' )
   .put( controller.updateDocumentById )
   .get( controller.getDocumentById )
-  .delete( controller.deleteDocumentById );
+  .delete( deleteCtrl( VideoModel ), controller.deleteDocumentById );
 
 export default router;

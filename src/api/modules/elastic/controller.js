@@ -3,12 +3,15 @@ import parser from './parser';
 // Pull controllers out to properly test
 // It will make it easier to integrate a db if we decide to do so
 export default {
-  async indexDocument( model, body ) {
-    const doc = await this.findDocument( model, body );
-    if ( doc && doc._id ) {
-      return this.updateDocument( model, body, doc._id );
+  async indexDocument( model, req ) {
+    if ( req.esDoc ) {
+      return this.updateDocument( model, req.body, req.esDoc.id );
     }
-    return model.indexDocument( body ).then( parser.parseCreateResult( body ) );
+    const doc = await this.findDocument( model, req.body );
+    if ( doc && doc._id ) {
+      return this.updateDocument( model, req.body, doc._id );
+    }
+    return model.indexDocument( req.body ).then( parser.parseCreateResult( req.body ) );
   },
 
   updateDocument( model, body, id ) {
@@ -24,8 +27,8 @@ export default {
   },
 
   async deleteDocumentByQuery( model, req ) {
-    if ( req._id ) {
-      return this.deleteDocumentById( model, req._id );
+    if ( req.esDoc ) {
+      return this.deleteDocumentById( model, req.esDoc.id );
     }
     // could use client.deleteByQuery but that would delete all that match the query
     // prefer to have check for unique value before deleting

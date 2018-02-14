@@ -14,10 +14,11 @@ export default {
             return resolve( null );
           }
           if ( total === 1 ) {
-            return resolve( result.hits.hits[0] );
+            const hit = result.hits.hits[0];
+            return resolve( { id: hit._id, ...hit._source } );
           }
           reject( new Error( 'Multiple results exist.' ) );
-        }
+        } else resolve( null );
       } );
   },
 
@@ -60,7 +61,7 @@ export default {
     return result =>
       new Promise( ( resolve, reject ) => {
         if ( result.found ) {
-          return resolve( id );
+          return resolve( { id } );
         }
         reject( id );
       } );

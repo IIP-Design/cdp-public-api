@@ -6,6 +6,8 @@ import asyncResponse from '../../../middleware/asyncResponse';
 
 const router = new Router();
 
+router.param( 'uuid', controller.setRequestDoc );
+
 // Route: /v1/post
 router
   .route( '/' )
@@ -13,11 +15,11 @@ router
   .get( controller.getDocument )
   .delete( deleteCtrl( PostModel ), controller.deleteDocument );
 
-// Route: /v1/post/[id]
+// Route: /v1/post/[uuid]
 router
   .route( '/:id' )
   .put( controller.updateDocumentById )
   .get( controller.getDocumentById )
-  .delete( controller.deleteDocumentById );
+  .delete( deleteCtrl( PostModel ), controller.deleteDocumentById );
 
 export default router;
