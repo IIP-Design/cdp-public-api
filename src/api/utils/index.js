@@ -1,3 +1,5 @@
+import Request from 'request';
+
 export const getQueryFromUuid = ( uuid = '' ) => {
   let obj = {};
   const args = uuid.split( '_' );
@@ -8,4 +10,23 @@ export const getQueryFromUuid = ( uuid = '' ) => {
     };
   }
   return obj;
+};
+
+export const callback = ( req, data ) => {
+  if ( req.headers.callback ) {
+    console.log( 'sending callback', req.headers.callback );
+    Request.post(
+      {
+        url: req.headers.callback,
+        json: true,
+        form: {
+          error: 0,
+          ...data
+        }
+      },
+      () => {}
+    );
+    return true;
+  }
+  return false;
 };

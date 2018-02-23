@@ -1,6 +1,6 @@
 import aws from '../services/amazon-aws';
 import Download from '../api/modules/download';
-import Request from 'request';
+import * as utils from '../api/utils';
 
 const downloadAsset = async ( url ) => {
   const download = await Download( url ).catch( ( err ) => {
@@ -98,21 +98,16 @@ export const transferCtrl = Model => async ( req, res, next ) => {
       next();
     } )
     .catch( ( err ) => {
-      if ( req.headers.callback ) {
-        console.log( 'sending callback error' );
-        Request.post(
-          {
-            url: req.headers.callback,
-            json: true,
-            body: {
-              error: 1,
-              message: JSON.stringify( err ),
-              request: req.body
-            }
-          },
-          () => {}
-        );
-      } else res.status( 500 ).json( err );
+      console.log( 'sending transfer error' );
+      if (
+        !utils.callback( req, {
+          error: 1,
+          message: JSON.stringify( err ),
+          request: req.body
+        } )
+      ) {
+        res.status( 400 ).json( err );
+      }
     } );
 };
 
