@@ -62,6 +62,32 @@ class Taxonomy extends AbstractModel {
     return result;
   }
 
+  /**
+   * Searches Elasticsearch for a terms that have a loose match in the
+   * synonymMapping property.
+   *
+   * @param name
+   * @returns {Promise<*>}
+   */
+  async findDocsBySynonym( name ) {
+    const result = await this.client
+      .search( {
+        index: this.index,
+        type: this.type,
+        body: {
+          query: {
+            match: {
+              synonymMapping: {
+                query: name
+              }
+            }
+          }
+        }
+      } )
+      .catch( err => err );
+    return result;
+  }
+
   async translateTermById( id, locale = 'en' ) {
     const result = await this.findDocumentById( id ).then( parser.parseGetResult( id ) );
     if ( result.language[locale] ) return result.language[locale];
