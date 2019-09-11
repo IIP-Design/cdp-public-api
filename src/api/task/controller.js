@@ -4,14 +4,26 @@ import Mime from 'mime-types';
 export const download = ( req, res ) => {
   let filename;
   let url;
-  if ( req.body.url && req.body.filename ) ( { url } = req.body );
-  else if ( !req.params.filename ) {
+  if ( req.body.url && req.body.filename ) {
+    ( { url } = req.body );
+  } else if ( req.params.opts && !req.params.filename ) {
     // This is mainly kept for backwards compatability but should be removed eventually
     const opts = JSON.parse( Buffer.from( req.params.opts, 'base64' ).toString() );
     ( { filename, url } = opts );
   } else {
     // filename is at the end of the URL so we don't need it as the browser will handle it
-    url = Buffer.from( req.params.opts, 'base64' ).toString();
+    let opts = null;
+    if ( req.params.opts ) {
+      ( { opts } = req.params );
+    } else if ( req.params['0'] ) {
+      // some base64 encodings for non-latin filenames have slashes forcing us to use regex
+      // in the route which prevents the use of named parameters
+      opts = req.params['0'];
+    }
+    if ( !opts ) {
+      return res.status( 404 ).send( 'Invalid download URL.' );
+    }
+    url = encodeURI( Buffer.from( opts, 'base64' ).toString() );
   }
   const mimeType = Mime.lookup( url ) || 'application/octet-stream';
   const reqHead = Request.head( { url }, ( error, response ) => {
@@ -110,10 +122,10 @@ const getOpenNetIPs = () => {
  * @returns {*}
  */
 export const isOpenNet = ( req, res ) => {
-  const ip = ( req.headers['x-forwarded-for'] || '' ).split( ',' ).shift() ||
-    req.connection.remoteAddress ||
-    req.socket.remoteAddress ||
-    req.connection.socket.remoteAddress;
+  const ip = ( req.headers['x-forwarded-for'] || '' ).split( ',' ).shift()
+    || req.connection.remoteAddress
+    || req.socket.remoteAddress
+    || req.connection.socket.remoteAddress;
   if ( !ip ) return res.json( { error: 1, message: 'IP Address not found.', isOpenNet: false } );
   const ipnum = ipToNum( ip );
   const OpenNetIPs = getOpenNetIPs();
