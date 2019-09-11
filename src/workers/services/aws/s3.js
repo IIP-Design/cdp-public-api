@@ -46,7 +46,7 @@ export const deleteS3Asset = ( key, bucket ) => {
 export const copyS3Asset = async ( key, fromBucket, toBucket ) => {
   const copyParams = {
     Bucket: toBucket,
-    CopySource: `/${fromBucket}/${key}`,
+    CopySource: encodeURIComponent( `/${fromBucket}/${key}` ),
     Key: key
   };
   return s3.copyObject( copyParams ).promise();
