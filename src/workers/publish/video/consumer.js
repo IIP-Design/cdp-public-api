@@ -11,7 +11,7 @@ import { copyS3AllAssets, deleteAllS3Assets } from '../../services/aws/s3';
 
 // RabbitMQ connection string
 const RABBITMQ_CONNECTION = process.env.RABBITMQ_ENDPOINT;
-const PUBLISHER_BUCKET = process.env.AWS_S3_PUBLISHER_BUCKET;
+const PUBLISHER_BUCKET = process.env.AWS_S3_AUTHORING_BUCKET;
 const PRODUCTION_BUCKET = process.env.AWS_S3_PRODUCTION_BUCKET;
 let consumerConnection = null;
 let publisherConnection = null;

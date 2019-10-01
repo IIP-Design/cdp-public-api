@@ -14,7 +14,7 @@ if ( process.env.NODE_ENV === 'production' ) {
     apiVersion: process.env.ES_API_VERSION,
     amazonES: {
       region: process.env.AWS_REGION,
-      accessKey: process.env.AWS_ACCESS_KEY_ID,
+      accessKey: process.env.AWS_ELASTIC_ACCESS_KEY_ID,
       secretKey: process.env.AWS_SECRET_ACCESS_KEY
     }
   };
