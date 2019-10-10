@@ -11,7 +11,7 @@ import { copyS3AllAssets, deleteAllS3Assets } from '../../services/aws/s3';
 
 // RabbitMQ connection string
 const RABBITMQ_CONNECTION = process.env.RABBITMQ_ENDPOINT;
-const PUBLISHER_BUCKET = process.env.AWS_S3_AUTHORING_BUCKET;
+const AUTHORING_BUCKET = process.env.AWS_S3_AUTHORING_BUCKET;
 const PRODUCTION_BUCKET = process.env.AWS_S3_PRODUCTION_BUCKET;
 let consumerConnection = null;
 let publisherConnection = null;
@@ -87,7 +87,7 @@ async function handleCreate( data ) {
     if ( creation.result === 'created' ) {
       if ( typeof projectDirectory === 'string' && projectDirectory ) {
         // what if this fails? add remove doc?
-        await copyS3AllAssets( projectDirectory, PUBLISHER_BUCKET, PRODUCTION_BUCKET );
+        await copyS3AllAssets( projectDirectory, AUTHORING_BUCKET, PRODUCTION_BUCKET );
       }
     }
   } catch ( err ) {
@@ -128,7 +128,7 @@ async function handleUpdate( data ) {
   if ( update.result === 'updated' ) {
     if ( typeof projectDirectory === 'string' && projectDirectory ) {
       // what if this to update? add remove doc?
-      await copyS3AllAssets( projectDirectory, PUBLISHER_BUCKET, PRODUCTION_BUCKET );
+      await copyS3AllAssets( projectDirectory, AUTHORING_BUCKET, PRODUCTION_BUCKET );
     }
   }
 

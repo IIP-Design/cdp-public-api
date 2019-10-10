@@ -15,7 +15,7 @@ if ( process.env.NODE_ENV === 'production' ) {
     amazonES: {
       region: process.env.AWS_REGION,
       accessKey: process.env.AWS_ELASTIC_ACCESS_KEY_ID,
-      secretKey: process.env.AWS_SECRET_ACCESS_KEY
+      secretKey: process.env.AWS_ELASTIC_SECRET
     }
   };
 } else {

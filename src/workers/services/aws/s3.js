@@ -2,8 +2,8 @@ const AWS = require( 'aws-sdk' );
 
 // Pulls in configs from .env
 AWS.config.update( {
-  accessKeyId: process.env.AWS_ACCESS_KEY_ID,
-  secretAccessKey: process.env.AWS_SECRET_ACCESS_KEY,
+  accessKeyId: process.env.AWS_S3_PRODUCTION_ACCESS_KEY_ID,
+  secretAccessKey: process.env.AWS_S3_PRODUCTION_SECRET,
   region: process.env.AWS_REGION
 } );
 
