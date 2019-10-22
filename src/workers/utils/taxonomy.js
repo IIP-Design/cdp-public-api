@@ -81,7 +81,7 @@ export const convertTags = async ( tags, language ) => {
 export const convertUnitTaxonomy = async ( unit ) => {
   const unitData = { ...unit };
   unitData.categories = await convertCategories( unitData.categories, unit.language );
-  delete unitData.tags;
+  unitData.tags = await convertCategories( unitData.tags, unit.language );
   return unitData;
 };
 
