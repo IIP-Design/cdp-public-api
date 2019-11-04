@@ -1,4 +1,5 @@
 # Change Log
+
 ##### All notable changes to this project will be documented in this file.
 
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
@@ -8,7 +9,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 **Changed:**
 
-- Added sorting for /language and /owner endpoints.
+- Owner and Language endpoints sorted alphabetically
 
 ## 1.4.0
 
@@ -31,6 +32,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 ## 1.3.2
 
 **Security:**
+
 - Updated dependencies with security vulnerabilities
 
 ## 1.3.1
@@ -56,7 +58,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 **Features Added:**
 
-- Updated custom\_taxonomies to be site\_taxonomies.
+- Updated custom_taxonomies to be site_taxonomies.
 - Updated the API to include the "web" or "broadcast" video property.
 - Fixed tags getting duplicated after multiple updates.
 - Added Vimeo implementation.
