@@ -95,6 +95,10 @@ const videoSchema = {
                 },
                 filetype: { type: 'string' },
                 video_quality: { type: 'string' },
+                visibility: {
+                  type: 'string',
+                  default: 'PUBLIC'
+                },
                 md5: { type: 'string' },
                 size: {
                   type: ['object', 'null'],
@@ -112,6 +116,10 @@ const videoSchema = {
             type: 'object',
             properties: {
               srcUrl: { type: 'string' },
+              visibility: {
+                type: 'string',
+                default: 'PUBLIC'
+              },
               md5: { type: 'string' },
               text: { type: 'string' }
             }
@@ -120,6 +128,10 @@ const videoSchema = {
             type: 'object',
             properties: {
               srcUrl: { type: 'string' },
+              visibility: {
+                type: 'string',
+                default: 'PUBLIC'
+              },
               md5: { type: 'string' }
             }
           }
@@ -134,6 +146,10 @@ const videoSchema = {
         properties: {
           language: languageSchema,
           supportFileType: { type: 'string' },
+          visibility: {
+            type: 'string',
+            default: 'PUBLIC'
+          },
           srcUrl: { type: 'string' },
           text: { type: 'string' }
         }

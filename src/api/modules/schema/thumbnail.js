@@ -5,6 +5,10 @@ const thumbnailSchema = {
     alt: { type: 'string' },
     caption: { type: 'string' },
     longdesc: { type: 'string' },
+    visibility: {
+      type: 'string',
+      default: 'PUBLIC'
+    },
     sizes: {
       type: 'object',
       properties: {
