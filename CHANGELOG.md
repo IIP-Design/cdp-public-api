@@ -5,6 +5,24 @@
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## 3.0.0
+
+**Features Added:**
+- Added visibility property to files.
+- Worker thread responsible for fielding requests from publisher via RabbitMQ.
+- Delete video functionality.
+
+**Changed:**
+- Video schema accepts string based post_id
+- Updated download endpoint to accomodate filename at the end of the URL instead of built into the encoded JSON to prevent encode errors caused by non-latin characters.
+- Added backwards compatability to the download endpoint.
+- Added thumbnail to unit items in the video schema so that it is accepted in incoming data.
+- Added supportFiles to video schema.
+- Updated download route with regex in order to accomodate a parameter argument that can have slashes.
+- Updated the download controller to also look for unnamed parameters captured by a regex matched request route.
+- Updated env var key names.
+- Updated dependencies.
+
 ## 1.4.1
 
 **Changed:**
