@@ -107,6 +107,42 @@ The Dockerfiles bring up a multi container network housing a Node server for the
 - Follow the confguration instructions above but set the `AWS_HOST` as follows `AWS_HOST=elk:9200`
 - Run `docker-compose up`
 
+### Elasticsearch
+
+#### Indices and Aliases
+
+The following indices and aliases need to be added to the local developement environment:
+
+| Index                 | Alias     |
+| --------------------- | --------- |
+| posts\_[YYYYMMDD]     | posts     |
+| videos\_[YYYYMMDD]    | videos    |
+| documents\_[YYYYMMDD] | documents |
+| packages\_[YYYYMMDD]  | packages  |
+| languages\_[YYYYMMDD] | languages |
+| owners\_[YYYYMMDD]    | owners    |
+| taxonomy\_[YYYYMMDD]  | taxonomy  |
+
+**From Kibana:**
+
+Create an index:
+`PUT /[index_name]`
+
+Create an alias:
+`PUT /[index_name]/alias/[alias_name]`
+
+#### Seeding the Static Indices
+
+The owners, languages and taxonomy indices are populated with static data. To seed the data into your local Elasticsearch instance, execute the following POST requests against your local cdp api server and passing the applicable .csv file in the body of the request:
+
+http://localhost:8080/v1/language/bulk
+
+http://localhost:8080/v1/taxonomy/bulk
+
+http://localhost:8080/v1/owner/bulk
+
+csv files are located in the /imports directory
+
 ### Scripts
 
 - `npm run start:main`: Starts the web server normally
