@@ -44,6 +44,8 @@
 ## Getting Started
 
 - `npm install`
+- `npm run dev`
+- `npm run dev:worker` (Run worker in a separate console window)
 
 ### Configuration
 
@@ -107,12 +109,17 @@ The Dockerfiles bring up a multi container network housing a Node server for the
 
 ### Scripts
 
-- `npm run start`: Starts the web server normally
+- `npm run start:main`: Starts the web server normally
+- `npm run start:worker`: Starts the worker normally
+- `npm run start`: Starts both the web server and worker normally
 - `npm run clear:build`: Removes the build directory.
-- `npm run build`: Generates build folder/files.
+- `npm run build:main`: Generates build folder/files for main.
+- `npm run build:worker`: Generates build folder/files for worker.
+- `npm run build`: Generates build folder/files for both app and worker.
 - `npm run dev`: Re-starts the server and re-complies the `build` folder after every change.
-- `npm run test`: Runs `npm run test:unit`.
-- `npm run test:unit`: Executes test cases.
+- `npm run dev:worker`: Starts worker in development mode.
+- `npm run test`: Runs `npm run test:unit`. [todo]
+- `npm run test:unit`: Executes test cases. [todo]
 
 ## Search Route
 
@@ -225,13 +232,7 @@ Content-Type: application/json
           "type": "post",
           "title": "The State of Affairs",
           "content": "<p>Is grave.</p>\n",
-          "tags": [
-            "another tag",
-            "test",
-            "category 2",
-            "subcat 1",
-            "another tag"
-          ],
+          "tags": ["another tag", "test", "category 2", "subcat 1", "another tag"],
           "site": "cdp.local",
           "post_id": 17,
           "modified": "2018-04-18T16:26:15+00:00",
