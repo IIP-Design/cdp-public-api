@@ -133,7 +133,7 @@ Create an alias:
 
 #### Seeding the Static Indices
 
-The owners, languages and taxonomy indices are populated with static data. To seed the data into your local Elasticsearch instance, execute the following POST requests against your local cdp api server and passing the applicable .csv file in the body of the request:
+The owners, languages and taxonomy indices are populated with static data. To seed the data into your local Elasticsearch instance, execute the following POST requests against your local cdp api server and pass the applicable .csv file in the body of the request:
 
 http://localhost:8080/v1/language/bulk
 
