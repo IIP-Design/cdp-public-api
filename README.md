@@ -111,7 +111,7 @@ The Dockerfiles bring up a multi container network housing a Node server for the
 
 #### Indices and Aliases
 
-The following indices and aliases need to be added to the local developement environment:
+The following indices and aliases need to be added to the local development environment:
 
 | Index                 | Alias     |
 | --------------------- | --------- |
