@@ -131,6 +131,25 @@ Create an index:
 Create an alias:
 `PUT /[index_name]/alias/[alias_name]`
 
+#### Creating a JWT for POST Authorization
+
+A JWT is required in order to execute the following POST requests. [Create](https://jwt.io/) the appropriate token with the values from the environment variables:
+
+```text
+JWT_SUBJECT=
+JWT_SECRET_KEY=
+```
+`JWT_SUBJECT`'s value should reflect `user`'s value in the decoded JWT payload. `JWT_SECRET_KEY`'s value should reflect the secret.
+
+Copy the generated token and include it in the headers when making POST requests. Your cURL request should look similar to the following:
+
+```text
+$ curl --location --request POST 'http://localhost:8080/v1/[index]/bulk' \
+--header 'Content-Type: text/csv' \
+--header 'Authorization: Bearer <TOKEN>' \
+--form 'csv=@/<path>/<to>/<csv>/<file.csv>'
+```
+
 #### Seeding the Static Indices
 
 The owners, languages and taxonomy indices are populated with static data. To seed the data into your local Elasticsearch instance, execute the following POST requests against your local cdp api server and pass the applicable .csv file in the body of the request:
