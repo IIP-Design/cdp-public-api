@@ -4,7 +4,7 @@ const webpackNodeExternals = require( 'webpack-node-externals' );
 module.exports = {
   target: 'node',
 
-  entry: './src/workers/publish/video/consumer.js',
+  entry: './src/workers/publish/consumer.js',
 
   output: {
     path: path.join( __dirname, 'build' ),

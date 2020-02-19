@@ -14,7 +14,7 @@
     "start:worker": "node build/consumer.js",
     "start:main": "node build/server.js",
     "dev": "nodemon -e js -x babel-node --inspect=7000 src/index.js",
-    "dev:worker": "nodemon -e js -x babel-node --inspect=7001 src/workers/publish/video/consumer.js"
+    "dev:worker": "nodemon -e js -x babel-node --inspect=7001 src/workers/publish/consumer.js"
   },
   "dependencies": {
     "ajv": "^6.10.0",
