@@ -7,6 +7,8 @@ const schema = {
     site: { type: 'string' },
     type: { type: 'string' },
     title: { type: 'string' },
+    desc: { type: 'string' },
+    visibility: { type: 'string' },
     published: { type: 'string' },
     modified: { type: 'string' },
     owner: { type: 'string' },

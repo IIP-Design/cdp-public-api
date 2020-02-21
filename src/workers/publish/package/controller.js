@@ -120,15 +120,18 @@ export const createDocument = async ( projectId, projectData ) => {
 
   // Index package
   const {
-    id, site, type, published, modified, owner
+    id, site, title, desc, type, published, modified, visibility, owner
   } = projectData;
 
   const pkgDoc = {
     id,
     site,
+    title,
+    desc,
     type,
     published,
     modified,
+    visibility,
     owner,
     items
   };
