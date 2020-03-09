@@ -1,41 +1,49 @@
+import url from 'url';
 import client from '../../../services/elasticsearch';
 import { validateSchema } from '../validate';
 import packageSchema from './schema';
 import { convertCategories } from '../../utils/taxonomy';
+import { deleteS3Asset } from '../../services/aws/s3';
 
 const INDEXING_DOMAIN = process.env.INDEXING_DOMAIN || 'commons.america.gov';
+const PRODUCTION_BUCKET = process.env.AWS_S3_PRODUCTION_BUCKET;
 
 /**
  * Extract the first hit result from an ES search
  * Should return only a single unique result
  *
- * @returns string  esId
+ * @returns object  elasticsearch doc
  */
 const parseFindResult = ( result ) => {
   if ( result && result.hits && result.hits.total === 1 ) { // should return only 1 unique result
     const [hit] = result.hits.hits;
-    return hit._id;
+    return hit;
   }
 };
 
+
 /**
- * Retrieve es project id from ES if it exists.
+ *  Retrieve es doc from ES if it exists.
+ * @param {*} projectId id coming from publisher
+ * @param {*} index Elastic search index
+ * @param {*} type  Elasticsearch document type
+ * @returns {object} Elasticsearch document
  */
-const findDocumentId = async ( projectId ) => {
+const findDocument = async ( projectId, index, type ) => {
   const doc = await client
     .search( {
-      index: 'videos',
-      type: 'video',
-      q: `site:${INDEXING_DOMAIN} AND post_id:${projectId}`
+      index,
+      type,
+      q: `site:${INDEXING_DOMAIN} AND id:${projectId}`
     } );
 
-  const id = parseFindResult( doc );
-  return id || null;
+  const foundDoc = parseFindResult( doc );
+  return foundDoc || null;
 };
 
 
 /**
- * Index/create a new video doc
+ * Index/create a new package or document doc in ES
  * @param body updated data
  * @returns {Promise<{boolean}>}
  */
@@ -46,14 +54,17 @@ const _createDocument = async ( index, type, body ) => client.index( {
 } );
 
 /**
- * Update the video specified by id from ES.
- * @param id elasticsearch id
+ * Update the package or document in ES specified by id from ES.
+ * @param {*} index Elastic search index
+ * @param {*} type  Elasticsearch document type
  * @param body updated data
- * @returns {Promise<{boolean}>}
+ * @param esid elasticsearch id
+ * @returns Promise
  */
-const _updateDocument = async ( body, esId ) => client.update( {
-  index: 'videos',
-  type: 'video',
+
+const _updateDocument = async ( index, type, body, esId ) => client.update( {
+  index,
+  type,
   id: esId,
   body: {
     doc: body
@@ -61,11 +72,13 @@ const _updateDocument = async ( body, esId ) => client.update( {
 } );
 
 /**
- * Delete the video specified by projectId from publisher.
- * @param projectId
- * @returns Promise
- */
-const _deleteDocuments = async ( index, type, id ) => client.deleteByQuery( {
+  * Delete the package or document specified by projectId from publisher.
+  * @param {*} index Elastic search index
+  * @param {*} type  Elasticsearch document type
+  * @param {*} id  id from publisher
+  * @returns Promise
+  */
+const _deleteDocument = async ( index, type, id ) => client.deleteByQuery( {
   index,
   type,
   q: `site:${INDEXING_DOMAIN} AND id:${id}`
@@ -73,7 +86,63 @@ const _deleteDocuments = async ( index, type, id ) => client.deleteByQuery( {
 
 
 /**
- * Update a video for the supplied id (post_id in ES) and data
+ * Compare existing docs against incoming docs
+ * If existing doc is not present in the incoming
+ * docd, remove
+ * @param {array} publisherDocuments incoming documents
+ * @param {array} esDocuments exisiting documents in ES
+ * @return promise
+ */
+const deletePackageDocuments = async ( publisherDocuments, esDocuments ) => {
+  const publisherIds = publisherDocuments.map( document => document.id );
+  const esIds = esDocuments.map( item => item.id );
+  const esItemsToDelete = esIds.filter( esId => !publisherIds.includes( esId ) );
+
+  if ( esItemsToDelete.length ) {
+    return Promise.all(
+      esItemsToDelete.map( async ( itemId ) => {
+        // delete doc from ES
+        await _deleteDocument( 'documents', 'document', itemId );
+
+        // delete doc S3
+        const document = esDocuments.find( item => item.id === itemId );
+        const _document = await findDocument( document.id, 'documents', 'document' );
+
+        if ( _document && _document._source && _document._source.url ) {
+          const path = url.parse( _document._source.url ).pathname.substr( 1 );
+          return deleteS3Asset( path, PRODUCTION_BUCKET );
+        }
+      } )
+    );
+  }
+
+  // explicity return resolved promise
+  return Promise.resolve();
+};
+
+/**
+ * Either create a new document or update an exisiting one
+ * @param {array} documents Incoming documents array
+ * @return promise
+ */
+const createOrUpdatePackageDocuments = async documents => Promise.all(
+  documents.map( async ( document ) => {
+    const _document = { ...document };
+    if ( document.tags ) {
+      _document.tags = await convertCategories( document.tags, document.language );
+    }
+    const esDoc = await findDocument( document.id, 'documents', 'document' );
+    if ( esDoc ) {
+      // update
+      return _updateDocument( 'documents', 'document', _document, esDoc._id );
+    }
+    // create
+    return _createDocument( 'documents', 'document', _document );
+  } )
+);
+
+/**
+ * Update a package or document for the supplied id (post_id in ES) and data
  * @param projectId
  * @param projectData
  * @returns {Promise<{esId, error, projectId}>}
@@ -81,19 +150,46 @@ const _deleteDocuments = async ( index, type, id ) => client.deleteByQuery( {
 export const updateDocument = async ( projectId, projectData ) => {
   console.log( 'Update content', projectId, projectData );
 
-  validateSchema( projectData );
+  validateSchema( projectData, packageSchema );
 
-  const esId = await findDocumentId( projectId );
-  if ( !esId ) {
+  // Find package
+  const esPackage = await findDocument( projectId, 'packages', 'package' );
+  if ( !esPackage ) {
     return { error: 'EsDocNotFound' };
   }
 
-  const convertedProject = await convertProjectTaxonomies( projectData );
-  return _updateDocument( convertedProject, esId );
+  const { documents } = projectData;
+  const { items } = esPackage._source;
+
+  // Delete docs
+  await deletePackageDocuments( documents, items );
+
+  // Create new doc or update existing on
+  await createOrUpdatePackageDocuments( documents );
+
+  // Get new doc ids to connect to package
+  const updatedItems = documents.map( document => ( { id: document.id, type: 'document' } ) );
+
+  const {
+    title, desc, type, published, modified, visibility, owner
+  } = projectData;
+
+  const pkgDoc = {
+    title,
+    desc,
+    type,
+    published,
+    modified,
+    visibility,
+    owner,
+    items: updatedItems
+  };
+
+  return _updateDocument( 'packages', 'package', pkgDoc, esPackage._id );
 };
 
 /**
- * Create/update a video for the supplied id (post_id in ES) and data
+ * Create/update a package or document for the supplied id (post_id in ES) and data
  * @param projectId
  * @param projectData
  * @returns {Promise<{esId, error, projectId}>}
@@ -147,6 +243,7 @@ export const createDocument = async ( projectId, projectData ) => {
  */
 export const deleteDocuments = async ( ids ) => {
   console.log( 'Delete content', ids );
+
   const _result = {
     failures: [],
     deleted: 0
@@ -156,11 +253,7 @@ export const deleteDocuments = async ( ids ) => {
 
   // 1. Delete all document type ES documents matching supplied query
   const results = await Promise.all(
-    documentIds.map( documentId => _deleteDocuments(
-      'documents',
-      'document',
-      documentId
-    ) )
+    documentIds.map( documentId => _deleteDocument( 'documents', 'document', documentId ) )
   );
 
   // 2. Collect deletion results for documents
@@ -170,7 +263,7 @@ export const deleteDocuments = async ( ids ) => {
   } );
 
   // 3. Delete containing packages matching query
-  const deletion = await _deleteDocuments( 'packages', 'package', id );
+  const deletion = await _deleteDocument( 'packages', 'package', id );
 
   // 4. Collect deletion results for package
   _result.failures = [..._result.failures, ...deletion.failures];

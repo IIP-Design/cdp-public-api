@@ -1,7 +1,5 @@
 /**
- * The stuff in the workers directory may go into a separate contianer.
- * Puting within the api codebase for testing purposes
- *
+ * The stuff in the workers directory may go into a separate container.
  */
 
 import {} from 'dotenv/config';
@@ -32,6 +30,7 @@ const consumePublishCreate = async () => {
   await channel.prefetch( 1 );
 
   channel.consume( 'publish.create', async ( msg ) => {
+    // Better error handling here, check for msg and msg fields
     const { routingKey } = msg.fields;
 
     let createFn = null;
@@ -57,6 +56,7 @@ const consumePublishUpdate = async () => {
   await channel.prefetch( 1 );
 
   channel.consume( 'publish.update', async ( msg ) => {
+    // Better error handling here, check for msg and msg fields
     const { routingKey } = msg.fields;
 
     let updateFn = null;
@@ -82,6 +82,7 @@ const consumePublishDelete = async () => {
   await channel.prefetch( 1 );
 
   channel.consume( 'publish.delete', async ( msg ) => {
+    // Better error handling here, check for msg and msg fields
     const { routingKey } = msg.fields;
 
     let deleteFn = null;
