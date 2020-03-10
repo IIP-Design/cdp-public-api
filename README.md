@@ -76,8 +76,8 @@ CF_STREAM_KEY=
 CF_STREAM_ZONE=
 CF_MAX_SIZE=1024
 
-JWT_SUBJECT=
-JWT_SECRET_KEY=
+ES_APP_USER=
+ES_APP_SECRET=
 
 ALLOW_REGISTER=false
 VIMEO_CLIENT_ID=
@@ -136,8 +136,8 @@ Create an alias:
 A JWT is required in order to execute the following POST requests. [Create](https://jwt.io/) the appropriate token with the values from the environment variables:
 
 ```text
-JWT_SUBJECT=
-JWT_SECRET_KEY=
+ES_APP_USER=
+ES_APP_SECRET=
 ```
 
 `JWT_SUBJECT`'s value should reflect `user`'s value in the decoded JWT payload. `JWT_SECRET_KEY`'s value should reflect the secret.
