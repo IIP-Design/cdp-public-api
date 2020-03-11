@@ -21,6 +21,7 @@ const schema = {
         markdown: { type: 'string' }
       }
     },
+    excerpt: { type: 'string' },
     url: { type: 'string' },
     use: { type: 'string' },
     bureaus: {
