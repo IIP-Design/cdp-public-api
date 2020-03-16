@@ -140,7 +140,7 @@ ES_APP_USER=
 ES_APP_SECRET=
 ```
 
-`JWT_SUBJECT`'s value should reflect `user`'s value in the decoded JWT payload. `JWT_SECRET_KEY`'s value should reflect the secret.
+`ES_APP_USER`'s value should reflect `user`'s value in the decoded JWT payload. `ES_APP_SECRET`'s value should reflect the secret.
 
 Copy the generated token and include it in the headers when making POST requests. Your cURL request should look similar to the following:
 
