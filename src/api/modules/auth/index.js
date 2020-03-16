@@ -1,5 +1,6 @@
 import { Router } from 'express';
 import jwt from 'jsonwebtoken';
+import cloneDeep from 'lodash.clonedeep';
 import vimeoRoutes from './vimeo';
 
 const router = new Router();
@@ -27,18 +28,50 @@ export const requireAuth = ( req, res, next ) => {
   next( { error: 1, message: 'Unauthorized' } );
 };
 
-export const isVerifiedToken = ( req ) => {
-  let isVerified = false;
+export const hasValidToken = ( req ) => {
+  let hasToken = false;
 
   if ( req.headers && typeof req.headers.authorization !== 'undefined' ) {
     const token = req.headers.authorization.split( ' ' )[1];
     jwt.verify( token, process.env.ES_APP_SECRET, ( err, decoded ) => {
       if ( decoded && decoded.user === process.env.ES_APP_USER ) {
-        isVerified = true;
+        hasToken = true;
       }
     } );
   }
-  return isVerified;
+  return hasToken;
+};
+
+/**
+ * Strips any content marked as internal
+ * @param {object} response Elastic search response
+ */
+export const stripInternalContent = ( response ) => {
+  const _response = cloneDeep( response );
+
+  // by pass aggregations
+  if ( !_response.aggregations ) {
+    if ( _response.hits.total ) {
+      const { hits } = _response.hits;
+      const re = /^(taxonomy|language|owner)/;
+      if ( re.test( hits[0]._index ) ) {
+        // do not process content from static index, return
+        return _response;
+      }
+
+      // if visibility flag is not present, i.e. content coming
+      // from WordPress OR visibility is not internal, add to array
+      const _hits = hits.filter( ( hit ) => {
+        const { visibility } = hit._source;
+        return !visibility || visibility.toLowerCase() !== 'internal';
+      } );
+
+      // replace the hits prop with stripped content
+      _response.hits.hits = _hits;
+    }
+  }
+
+  return _response;
 };
 
 /**

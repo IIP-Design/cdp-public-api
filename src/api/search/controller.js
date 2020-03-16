@@ -1,5 +1,7 @@
+
 import client from '../../services/elasticsearch';
 import * as validate from '../modules/validate';
+
 
 // TODO: implement multisearch query
 const multiSearch = async ( req, res ) => {
@@ -16,30 +18,26 @@ const singleSearch = async ( req, res ) => {
     error: {}
   };
 
-  data = validate.stringOrStringArray(
-    {
-      q: req.body.query,
-      _sourceExclude: req.body.exclude,
-      _sourceInclude: req.body.include,
-      type: req.body.type,
-      index: req.body.index,
-      sort: req.body.sort,
-      scroll: req.body.scroll
-    },
-    data
-  );
+  data = validate.stringOrStringArray( {
+    q: req.body.query,
+    _sourceExclude: req.body.exclude,
+    _sourceInclude: req.body.include,
+    type: req.body.type,
+    index: req.body.index,
+    sort: req.body.sort,
+    scroll: req.body.scroll
+  },
+  data );
 
   if ( req.body.body ) {
     data = validate.jsonString( { body: req.body.body }, data );
   }
 
-  data = validate.number(
-    {
-      from: req.body.from,
-      size: req.body.size
-    },
-    data
-  );
+  data = validate.number( {
+    from: req.body.from,
+    size: req.body.size
+  },
+  data );
 
   if ( Object.keys( data.error ).length > 0 ) {
     return res.status( 400 ).json( {
