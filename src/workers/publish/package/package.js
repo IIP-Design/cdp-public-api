@@ -1,11 +1,11 @@
 /**
- * The stuff in the workers directory may go into a separate contianer.
+ * The stuff in the workers directory may go into a separate container.
  * Puting within the api codebase for testing purposes
  *
  */
 
 import {} from 'dotenv/config';
-import { publishToChannel } from '../connection';
+import { publishToChannel } from '../../connection';
 import { createDocument, updateDocument, deleteDocuments } from './controller';
 import { copyS3AllAssets, deleteAllS3Assets } from '../../services/aws/s3';
 

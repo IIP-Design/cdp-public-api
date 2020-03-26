@@ -5,7 +5,7 @@
  */
 
 import {} from 'dotenv/config';
-import { publishToChannel } from '../connection';
+import { publishToChannel } from '../../connection';
 import { createDocument, updateDocument, deleteDocument } from './controller';
 import { copyS3AllAssets, deleteAllS3Assets } from '../../services/aws/s3';
 

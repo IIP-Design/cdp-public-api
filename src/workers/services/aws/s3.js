@@ -1,4 +1,7 @@
+const fs = require( 'fs' );
 const AWS = require( 'aws-sdk' );
+
+const AUTHORING_BUCKET = process.env.AWS_S3_AUTHORING_BUCKET;
 
 // Pulls in configs from .env
 AWS.config.update( {
@@ -68,3 +71,34 @@ export const copyS3AllAssets = async ( dir, fromBucket, toBucket ) => {
   // If more than a page of files, copy next batch
   if ( listedObjects.IsTruncated ) await copyS3AllAssets( dir, fromBucket, toBucket );
 };
+
+
+export const uploadAsset = ( file, key ) => {
+  const fileContent = fs.readFileSync( file );
+  // Setting up S3 upload parameters
+  const params = {
+    Bucket: AUTHORING_BUCKET,
+    Key: key,
+    Body: fileContent
+  };
+
+  // Upload files to the bucket
+  return s3.upload( params ).promise();
+};
+
+export const getSignedUrl = params => new Promise( ( resolve, reject ) => {
+  const { key, expires } = params;
+
+  s3.getSignedUrl( 'getObject', {
+    Bucket: AUTHORING_BUCKET,
+    Key: key,
+    Expires: expires || 900 // default 15 minutes
+  },
+  ( err, url ) => {
+    if ( err ) {
+      reject( err );
+    } else {
+      resolve( { key, url } );
+    }
+  } );
+} );

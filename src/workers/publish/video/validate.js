@@ -1,6 +1,8 @@
 import Ajv from 'ajv';
 import videoSchema from '../../../api/modules/schema/video';
 
+// TODO -  use shared validator
+
 export const compileValidationErrors = errors => `Validation errors: [${errors.map( error => `${error.dataPath || error.keyword || 'root'}] ${error.message}` )}`;
 
 const compileSchema = ( useDefaults ) => {

@@ -4,8 +4,9 @@
 
 import {} from 'dotenv/config';
 import { getConsumerChannel } from './connection';
-import video from './video/video';
-import pkg from './package/package';
+import video from './publish/video/video';
+import pkg from './publish/package/package';
+import document from './utils/document';
 
 async function processRequest( channel, msg, processFunc ) {
   let data = null;
@@ -103,12 +104,25 @@ const consumePublishDelete = async () => {
   } );
 };
 
+const consumeUtilProcessDocument = async () => {
+  const channel = await getConsumerChannel();
+  await channel.prefetch( 1 );
+
+  channel.consume( 'util.process', async ( msg ) => {
+    const { routingKey } = msg.fields;
+    if ( routingKey === 'convert.document' ) {
+      document.handleConvert( channel, msg );
+    }
+  } );
+};
+
 // add error handling
 const listenForMessages = async () => {
   // start consuming messages
   consumePublishCreate();
   consumePublishUpdate();
   consumePublishDelete();
+  consumeUtilProcessDocument();
 
   console.log( '[...] LISTENING for publish requests' );
 };
