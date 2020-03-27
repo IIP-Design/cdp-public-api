@@ -42,7 +42,6 @@
     "mime-types": "^2.1.24",
     "newrelic": "^6.2.0",
     "node-html-to-image": "^1.1.0",
-    "puppeteer": "^2.1.1",
     "request": "^2.88.0",
     "source-map-support": "^0.5.12",
     "tmp": "0.0.33",

@@ -80,10 +80,10 @@ export const generateDocThumbnail = async ( html, assetPath, outputName ) => {
   const filename = getCleanFileName( outputName );
   const tmpSavePath = path.join( tmpDir.name, filename );
 
-  await nodeHtmlToImage(
-    {
-      output: tmpSavePath,
-      html: `<html>
+  await nodeHtmlToImage( {
+    output: tmpSavePath,
+    puppeteerArgs: { args: ['--no-sandbox', '--disable-setuid-sandbox'] },
+    html: `<html
         <head>
           <style>
             body {
@@ -104,12 +104,7 @@ export const generateDocThumbnail = async ( html, assetPath, outputName ) => {
         <body>${html}</body>
       </html>
       `
-    }
-  ).catch(
-    err => console.log(
-      err
-    )
-  );
+  } ).catch( err => console.log( err ) );
 
   // upload to aws
   const res = await uploadAsset( tmpSavePath, `${assetPath}${filename}` );
