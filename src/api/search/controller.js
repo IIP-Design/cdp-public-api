@@ -1,6 +1,7 @@
 
 import client from '../../services/elasticsearch';
 import * as validate from '../modules/validate';
+import { hasValidToken, stripInternalContent } from '../modules/auth';
 
 
 // TODO: implement multisearch query
@@ -47,7 +48,13 @@ const singleSearch = async ( req, res ) => {
   }
 
   try {
-    res.json( await client.search( data.options ).then( esResponse => esResponse ) );
+    res.json( await client.search( data.options ).then( ( esResponse ) => {
+      if ( !hasValidToken( req ) ) {
+        return stripInternalContent( esResponse );
+      }
+
+      return esResponse;
+    } ) );
   } catch ( err ) {
     // const message = JSON.parse( err.response ).error.caused_by.reason;
     console.error( 'search error', '\r\n', JSON.stringify( err, null, 2 ) );
