@@ -1,8 +1,15 @@
 import { publishToChannel } from '../connection';
 import { convertDocxContent, generateDocThumbnail } from './documentConversion';
 
+
 async function handleConvert( channel, msg ) {
   console.log( '[√] Handle a util process document request' );
+
+  const {
+    env: { WORKER_GENERATE_THUMBNAIL }
+  } = process;
+
+  const createThumb = WORKER_GENERATE_THUMBNAIL !== 'no';
 
   const msgBody = msg.content.toString();
   const data = JSON.parse( msgBody );
@@ -21,13 +28,9 @@ async function handleConvert( channel, msg ) {
 
       // Extract html content
       content = await convertDocxContent( url );
-      if ( content ) {
-      // Use extracted html to create thumbnail
-        thumbnailUrl = await generateDocThumbnail(
-          content.html,
-          assetPath,
-          thumbnailFilename
-        );
+      if ( createThumb && content ) {
+        // Use extracted html to create thumbnail
+        thumbnailUrl = await generateDocThumbnail( content.html, assetPath, thumbnailFilename );
       }
     }
   } catch ( err ) {
@@ -42,7 +45,7 @@ async function handleConvert( channel, msg ) {
       id,
       title: thumbnailFilename,
       content,
-      thumbnailUrl,
+      thumbnailUrl: createThumb ? thumbnailUrl : 'NONE',
       error
     }
   } );
