@@ -1,4 +1,5 @@
 import documentSchema from '../document/schema';
+import languageSchema from '../../../api/modules/schema/language';
 
 const schema = {
   type: 'object',
@@ -12,6 +13,7 @@ const schema = {
     published: { type: 'string' },
     modified: { type: 'string' },
     owner: { type: 'string' },
+    language: languageSchema,
     documents: {
       type: 'array',
       default: [],

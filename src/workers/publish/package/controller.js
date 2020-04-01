@@ -171,7 +171,7 @@ export const updateDocument = async ( projectId, projectData ) => {
   const updatedItems = documents.map( document => ( { id: document.id, type: 'document' } ) );
 
   const {
-    title, desc, type, published, modified, visibility, owner
+    title, desc, type, published, modified, visibility, language, owner
   } = projectData;
 
   const pkgDoc = {
@@ -181,6 +181,7 @@ export const updateDocument = async ( projectId, projectData ) => {
     published,
     modified,
     visibility,
+    language,
     owner,
     items: updatedItems
   };
