@@ -217,7 +217,7 @@ export const createDocument = async ( projectId, projectData ) => {
 
   // Index package
   const {
-    id, site, title, desc, type, published, modified, visibility, owner
+    id, site, title, desc, type, published, modified, language, visibility, owner
   } = projectData;
 
   const pkgDoc = {
@@ -228,6 +228,7 @@ export const createDocument = async ( projectId, projectData ) => {
     type,
     published,
     modified,
+    language,
     visibility,
     owner,
     items
