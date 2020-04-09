@@ -1,5 +1,6 @@
 # https://docs.docker.com/compose/overview/
-version: '3'
+version: '3.7'
+
 services:
   # http://elk-docker.readthedocs.io/
   elk:
@@ -14,4 +15,4 @@ services:
 
 volumes:
   elk:
-    driver: local
+    name: cdp_api_elk
