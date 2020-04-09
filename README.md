@@ -4,11 +4,10 @@
 
 <!-- DON'T EDIT THIS SECTION, INSTEAD RE-RUN doctoc TO UPDATE -->
 
-<!-- DON'T EDIT THIS SECTION, INSTEAD RE-RUN doctoc TO UPDATE -->
-
 - [Getting Started](#getting-started)
   - [Configuration](#configuration)
   - [Using Docker](#using-docker)
+  - [Elasticsearch](#elasticsearch)
   - [Scripts](#scripts)
 - [Search Route](#search-route)
   - [`/v1/search`](#v1search)
@@ -78,6 +77,7 @@ CF_MAX_SIZE=1024
 
 ES_APP_USER=
 ES_APP_SECRET=
+ES_API_VERSION=6.x
 
 ALLOW_REGISTER=false
 VIMEO_CLIENT_ID=
@@ -96,22 +96,19 @@ OPENNET_IPS=<IP.Range1.Start>:<IP.Range1.End> <IP.Range2.Start>:<IP.Range2.End>
 
 **Important**: If you are connecting to AWS Elasticsearch, set the environment field to `production`. By default, the environment is set to `development`.
 
-Follows the [airbnb javascript style guide](https://github.com/airbnb/javascript).
-
 ### Using Docker
 
-The Dockerfiles bring up a multi container network housing a Node server for the API and an Elastic server housing the ELK stack. To get started:
+The Dockerfiles bring up a multi-container network housing a Node server for the API and an Elastic server housing the ELK stack. To get started:
 
-- Install Docker if it is not already installed. [Docker for Mac](https://www.docker.com/docker-mac) is the fastest and most reliable way to run Docker on a Mac
-- Ensure that you have alloted at least 4.0 GB RAM to Docker as Elasticsearch requires that amount to run. This can be set by going to the 'Preferences' menu of the Docker dropdown and selecting the 'Advanced' tab
-- Follow the confguration instructions above but set the `AWS_HOST` as follows `AWS_HOST=elk:9200`
-- Run `docker-compose up`
+- Install Docker if it is not already installed on your system. [Docker for Mac](https://www.docker.com/docker-mac) is the fastest and most reliable way to run Docker on a Mac.
+- Ensure that you have alloted at least 4.0 GB of memory to Docker as Elasticsearch requires that amount to run. This can be set by going to the 'Preferences' menu of the Docker dropdown and selecting the 'Resources' tab
+- Run `docker-compose up -d` to initialize the required containers. Note that if you would like to see the Docker console output in your terminal you can omit the `-d` flag.
 
 ### Elasticsearch
 
 #### Indices and Aliases
 
-The following indices and aliases need to be added to the local development environment:
+Once you have the Docker ELK stack running, you will be able to create the required indices and seed them with the needed data. The following indices and aliases need to be added to the local development environment:
 
 | Index                 | Alias     |
 | --------------------- | --------- |
@@ -125,43 +122,65 @@ The following indices and aliases need to be added to the local development envi
 
 **From Kibana:**
 
+To add the indices, navigate to http://localhost:5601 in your browser, which should open the Kibana dashboard for your local Elasticsearch instance. Therein, click on `Dev Tools` in the menu to access the development console. In the console, create the above indices (filling in the suffix with the current date) and alias them to their respective names.
+
 Create an index:
 `PUT /[index_name]`
 
 Create an alias:
-`PUT /[index_name]/alias/[alias_name]`
+`PUT /[index_name]/_alias/[alias_name]`
+
+![screenshot of kibana dashboard with example index creation commands](docs/assets/create-index.png)
 
 #### Creating a JWT for POST Authorization
 
-A JWT is required in order to execute the following POST requests. [Create](https://jwt.io/) the appropriate token with the values from the environment variables:
+A JSON Web Token (JWT) is required in order to execute the POST requests against the API. The easiest way to create a JWT is at [jwt.io](https://jwt.io/). First add a user name and 256-bit secret (you can easily get a 256-bit secret [here](https://www.allkeysgenerator.com/Random/Security-Encryption-Key-Generator.aspx)) to the following variables in your `.env` file:
 
 ```text
 ES_APP_USER=
 ES_APP_SECRET=
 ```
 
-`ES_APP_USER`'s value should reflect `user`'s value in the decoded JWT payload. `ES_APP_SECRET`'s value should reflect the secret.
+Then navigate to the jwt.io and find the "Debugger" section of the page. Under "Decoded" replace the values in the payload data section with `"user": "<ES_APP_USER>"` and add `ES_APP_SECRET`'s value to the input labeled "your-256-bit-secret" under verify signature.
 
-Copy the generated token and include it in the headers when making POST requests. Your cURL request should look similar to the following:
-
-```text
-$ curl --location --request POST 'http://localhost:8080/v1/[index]/bulk' \
---header 'Content-Type: text/csv' \
---header 'Authorization: Bearer <TOKEN>' \
---form 'csv=@/<path>/<to>/<csv>/<file.csv>'
-```
+The resulting generated value under "Encoded" is your JWT. Copy the token for use when making POST requests using the header `Authorization: Bearer <TOKEN>`. (Note: this token should not be considered secure and should only be used to authenticate to your loack development environment).
 
 #### Seeding the Static Indices
 
-The owners, languages and taxonomy indices are populated with static data. To seed the data into your local Elasticsearch instance, execute the following POST requests against your local cdp api server and pass the applicable .csv file in the body of the request:
+Once the indices are created and the you have a valid JWT, you can use the API to seed the owners, languages, and taxonomy indices in your local Elasticsearch with the required static data.
 
-http://localhost:8080/v1/language/bulk
+If you haven't already done so, run `npm install` to install the dependencies, and (in separate terminals) `npm run dev` and `npm run dev:worker` to start the dev API. To seed the data, execute the following POST requests against your local CDP API server and pass the applicable .csv file in the body of the request:
+- http://localhost:8080/v1/language/bulk
+- http://localhost:8080/v1/taxonomy/bulk
+- http://localhost:8080/v1/owner/bulk
 
-http://localhost:8080/v1/taxonomy/bulk
+The necessary CSV files are located in the `/imports` directory.
 
-http://localhost:8080/v1/owner/bulk
+You can use whatever tool you like to run your API requests, but we find Postman to be the easiest. In Postman create a new `POST` request to the relevant endpoint. Under the `Headers` section add the following:
 
-csv files are located in the /imports directory
+**Key**       | **Value** 
+--------------|----------------------------------
+Content-Type  | application/x-www-form-urlencoded
+Authorization | Bearer \<TOKEN\>
+
+The resulting request should look something like:
+
+![screenshot of example postman request with headers](docs/assets/postman-headers.png)
+
+Under the `Body` section, seclect the `form-data` radio button and add the key
+`csv` and select the relevant CSV file. The result should look something like:
+
+![screenshot of example postman request with body](docs/assets/postman-body.png)
+
+Click the send button to execute your request and seed the index. Once you have completed this for all three indices, you're local CDP API is ready for use.
+
+If you prefer, these API requests can also be run from the command line using cURL:
+```bash
+$ curl --location --request POST 'http://localhost:8080/v1/owner/bulk' \
+--header 'Content-Type: text/csv' \
+--header 'Authorization: Bearer <TOKEN>' \
+--form 'csv=@/imports/cdp_owners.csv'
+```
 
 ### Scripts
 
@@ -288,7 +307,13 @@ Content-Type: application/json
           "type": "post",
           "title": "The State of Affairs",
           "content": "<p>Is grave.</p>\n",
-          "tags": ["another tag", "test", "category 2", "subcat 1", "another tag"],
+          "tags": [
+            "another tag",
+            "test",
+            "category 2",
+            "subcat 1",
+            "another tag"
+          ],
           "site": "cdp.local",
           "post_id": 17,
           "modified": "2018-04-18T16:26:15+00:00",
