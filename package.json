@@ -1,6 +1,6 @@
 {
   "name": "cdp-public-api",
-  "version": "3.0.0",
+  "version": "4.0.0",
   "main": "server.js",
   "repository": "git@github.com:IIP-Design/cdp-public-api.git",
   "author": "Office of Design <designdevops@america.gov>",
