@@ -5,6 +5,17 @@
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## 4.0.0
+
+**Features Added:**
+- Worker thread responsible for extracting text/html from word documents and generating an image thumbnail
+- Added package and document publishing
+- Added s3 upload for generated thumbnails
+- Added coronavirus tag to taxonomy
+
+**Changed**
+- Moved Rabbit publish consumer up one level to handle different queue types
+
 ## 3.0.0
 
 **Features Added:**
