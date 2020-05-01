@@ -15,12 +15,12 @@ const PRODUCTION_BUCKET = process.env.AWS_S3_PRODUCTION_BUCKET;
  * @returns object  elasticsearch doc
  */
 const parseFindResult = ( result ) => {
-  if ( result && result.hits && result.hits.total === 1 ) { // should return only 1 unique result
+  if ( result && result.hits && result.hits.total === 1 ) {
+    // should return only 1 unique result
     const [hit] = result.hits.hits;
     return hit;
   }
 };
-
 
 /**
  *  Retrieve es doc from ES if it exists.
@@ -30,17 +30,15 @@ const parseFindResult = ( result ) => {
  * @returns {object} Elasticsearch document
  */
 const findDocument = async ( projectId, index, type ) => {
-  const doc = await client
-    .search( {
-      index,
-      type,
-      q: `site:${INDEXING_DOMAIN} AND id:${projectId}`
-    } );
+  const doc = await client.search( {
+    index,
+    type,
+    q: `site:${INDEXING_DOMAIN} AND id:${projectId}`
+  } );
 
   const foundDoc = parseFindResult( doc );
   return foundDoc || null;
 };
-
 
 /**
  * Index/create a new package or document doc in ES
@@ -72,18 +70,17 @@ const _updateDocument = async ( index, type, body, esId ) => client.update( {
 } );
 
 /**
-  * Delete the package or document specified by projectId from publisher.
-  * @param {*} index Elastic search index
-  * @param {*} type  Elasticsearch document type
-  * @param {*} id  id from publisher
-  * @returns Promise
-  */
+ * Delete the package or document specified by projectId from publisher.
+ * @param {*} index Elastic search index
+ * @param {*} type  Elasticsearch document type
+ * @param {*} id  id from publisher
+ * @returns Promise
+ */
 const _deleteDocument = async ( index, type, id ) => client.deleteByQuery( {
   index,
   type,
   q: `site:${INDEXING_DOMAIN} AND id:${id}`
 } );
-
 
 /**
  * Compare existing docs against incoming docs
@@ -171,7 +168,15 @@ export const updateDocument = async ( projectId, projectData ) => {
   const updatedItems = documents.map( document => ( { id: document.id, type: 'document' } ) );
 
   const {
-    title, desc, type, published, modified, visibility, language, owner
+    title,
+    desc,
+    type,
+    published,
+    modified,
+    created,
+    visibility,
+    language,
+    owner
   } = projectData;
 
   const pkgDoc = {
@@ -180,6 +185,7 @@ export const updateDocument = async ( projectId, projectData ) => {
     type,
     published,
     modified,
+    created,
     visibility,
     language,
     owner,
@@ -203,21 +209,33 @@ export const createDocument = async ( projectId, projectData ) => {
   const { documents } = projectData;
 
   // Index each individual document
-  const items = await Promise.all( documents.map( async ( document ) => {
-    // If doc has tags, convert to elastic tags using elastic tag ids
-    const _document = { ...document };
-    if ( document.tags ) {
-      _document.tags = await convertCategories( document.tags, document.language );
-    }
+  const items = await Promise.all(
+    documents.map( async ( document ) => {
+      // If doc has tags, convert to elastic tags using elastic tag ids
+      const _document = { ...document };
+      if ( document.tags ) {
+        _document.tags = await convertCategories( document.tags, document.language );
+      }
 
-    await _createDocument( 'documents', 'document', _document );
-    // todo: check for success, error
-    return { id: document.id, type: 'document' };
-  } ) );
+      await _createDocument( 'documents', 'document', _document );
+      // todo: check for success, error
+      return { id: document.id, type: 'document' };
+    } )
+  );
 
   // Index package
   const {
-    id, site, title, desc, type, published, modified, language, visibility, owner
+    id,
+    site,
+    title,
+    desc,
+    type,
+    published,
+    modified,
+    created,
+    language,
+    visibility,
+    owner
   } = projectData;
 
   const pkgDoc = {
@@ -228,6 +246,7 @@ export const createDocument = async ( projectId, projectData ) => {
     type,
     published,
     modified,
+    created,
     language,
     visibility,
     owner,

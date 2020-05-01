@@ -12,6 +12,7 @@ const schema = {
     visibility: { type: 'string' },
     published: { type: 'string' },
     modified: { type: 'string' },
+    created: { type: 'string' },
     owner: { type: 'string' },
     language: languageSchema,
     documents: {
