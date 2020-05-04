@@ -5,6 +5,12 @@
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## [Unreleased](https://github.com/IIP-Design/cdp-public-api/compare/v4.0.0...HEAD)
+_This sections lists changes committed since most recent release_
+
+**Features Added:**
+Add `created` prop to elasticsearch package model
+
 ## 4.0.0
 
 **Features Added:**
