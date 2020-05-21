@@ -68,7 +68,7 @@ const getDocumentContent = async ( input ) => {
 
 const getCleanFileName = ( filename ) => {
   const _filename = filename
-    .replace( /['.,]/g, '' )
+    .replace( /[&/\\#,+$~%'"`=:;*?^<>@(){}|[\]]/g, '' )
     .replace( /\s/g, '_' )
     .toLowerCase();
 
