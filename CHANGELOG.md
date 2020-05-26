@@ -7,6 +7,12 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased](https://github.com/IIP-Design/cdp-public-api/compare/v4.1.0...HEAD)
 _This sections lists changes committed since most recent release_
+## 4.1.1
+**Added:**
+- Added repatriation tag with translations
+
+**Changed:**
+- Remove special characters from document thumbnail filenames on save
 
 ## 4.1.0
 
