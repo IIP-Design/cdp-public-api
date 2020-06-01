@@ -8,5 +8,19 @@
         }
       }
     ]
+  ],
+  "plugins": [
+    [
+      "module-resolver",
+      {
+        "root": "./",
+        "alias": {
+          "api": "./src/api",
+          "middleware": "./src/middleware",
+          "services": "./src/services",
+          "workers": "./src/workers"
+        }
+      }
+    ]
   ]
 }
