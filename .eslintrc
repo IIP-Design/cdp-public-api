@@ -1,0 +1,4 @@
+{
+  "extends": ["@gpa-lab/eslint-config"],
+  "parser": "babel-eslint"
+}
