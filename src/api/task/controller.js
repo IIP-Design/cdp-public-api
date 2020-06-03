@@ -1,73 +1,95 @@
-import Request from 'request';
+import request from 'request';
 import Mime from 'mime-types';
 
-export const download = ( req, res ) => {
+import {getSignedUrl} from '../../workers/services/aws/s3';
+
+const getParams = req => {
   let filename;
+  let key;
   let url;
+
   if ( req.body.url && req.body.filename ) {
-    ( { url } = req.body );
+    ( { filename, url } = req.body );
   } else if ( req.params.opts && !req.params.filename ) {
-    // This is mainly kept for backwards compatability but should be removed eventually
+    // This is mainly kept for backwards compatibility but should be removed eventually
     const opts = JSON.parse( Buffer.from( req.params.opts, 'base64' ).toString() );
-    ( { filename, url } = opts );
+    
+    ({ filename, url, key } = opts);
   } else {
     // filename is at the end of the URL so we don't need it as the browser will handle it
     let opts = null;
     if ( req.params.opts ) {
-      ( { opts } = req.params );
+      ({ opts } = req.params);
     } else if ( req.params['0'] ) {
       // some base64 encodings for non-latin filenames have slashes forcing us to use regex
       // in the route which prevents the use of named parameters
       opts = req.params['0'];
     }
+
     if ( !opts ) {
       return res.status( 404 ).send( 'Invalid download URL.' );
     }
+
     url = encodeURI( Buffer.from( opts, 'base64' ).toString() );
   }
-  const mimeType = Mime.lookup( url ) || 'application/octet-stream';
-  const reqHead = Request.head( { url }, ( error, response ) => {
-    if ( error ) {
-      reqHead.abort();
-      return res.status( 404 ).json( error );
-    }
-    if ( response.statusCode !== 200 ) {
-      reqHead.abort();
-      return res.status( 404 ).send( 'File not found.' );
-    }
-    const fileSize = response.headers['content-length'];
-    // Chunks based streaming
-    if ( req.headers.range ) {
-      const { range } = req.headers;
-      const parts = range.replace( /bytes=/, '' ).split( '-' );
-      const start = parseInt( parts[0], 10 );
-      const end = parts[1] ? parseInt( parts[1], 10 ) : fileSize - 1;
-      const chunksize = end - start + 1; // eslint-disable-line no-mixed-operators
 
-      const head = {
-        'Content-Range': `bytes ${start}-${end}/${fileSize}`,
-        'Accept-Ranges': 'bytes',
-        'Content-Length': chunksize,
-        'Content-Type': mimeType
-      };
-      res.writeHead( 206, head );
-      Request.get( url, {
-        headers: {
-          Accept: '*/*',
-          'Accept-Encoding': 'identity',
-          connection: 'keep-alive',
-          range,
-          'accept-ranges': 'bytes'
-        }
-      } ).pipe( res );
-    } else {
-      if ( fileSize ) res.setHeader( 'Content-Length', fileSize );
-      res.setHeader( 'Content-Type', mimeType );
-      // if the filename is null then
-      res.setHeader( 'Content-Disposition', `attachment${filename ? `; filename=${filename}` : ''}` );
-      Request.get( url ).pipe( res );
-    }
-  } );
+  return { filename, key, url }
+}
+
+export const download = async ( req, res ) => {
+  const { filename, key, url } = getParams(req)
+
+  const mimeType = Mime.lookup( url ) || 'application/octet-stream';
+
+  const signedHead = await getSignedUrl({bucket: 'prod', key, type: 'head'});
+  const signedGet = await getSignedUrl({bucket: 'prod', key});
+
+  const headReq = key ? signedHead.url : url;
+  const getReq = key ? signedGet.url : url;
+
+  request
+    .get(headReq)
+    .on( 'error', err => {
+      return res.status( 404 ).json( err );
+    })
+    .on('response', response => {
+      console.log(response.statusCode)
+      if (response.statusCode !== 200 ) return res.status( 404 ).send( 'File not found.' );
+
+      const fileSize = response.headers['content-length'];
+
+      if ( req.headers.range ) {
+        const { range } = req.headers;
+        const parts = range.replace( /bytes=/, '' ).split( '-' );
+        const start = parseInt( parts[0], 10 );
+        const end = parts[1] ? parseInt( parts[1], 10 ) : fileSize - 1;
+        const chunksize = end - start + 1; // eslint-disable-line no-mixed-operators
+
+        const head = {
+          'Content-Range': `bytes ${start}-${end}/${fileSize}`,
+          'Accept-Ranges': 'bytes',
+          'Content-Length': chunksize,
+          'Content-Type': mimeType
+        };
+
+        res.writeHead( 206, head );
+
+        request
+          .get( signed.url, {
+            Accept: '*/*',
+            'Accept-Encoding': 'identity',
+            connection: 'keep-alive',
+            range,
+            'accept-ranges': 'bytes'
+          })
+          .pipe(res)
+      } else {
+        if ( fileSize ) res.setHeader( 'Content-Length', fileSize );
+        res.setHeader( 'Content-Type', mimeType );
+        res.setHeader( 'Content-Disposition', `attachment${filename ? `; filename=${filename}` : ''}` );
+        request.get( getReq ).pipe( res )
+      }
+    })
 };
 
 /**

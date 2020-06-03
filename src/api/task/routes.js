@@ -7,7 +7,7 @@ const router = new Router();
 // The regex route allows us to capture the base64 encoded opts object even with slashes.
 // Whatever follows the LAST trailing slash will be the filename.
 router.route( /^\/download\/(.*)\/([^/]+)$/ ).get( controller.download );
-// Below is only kept for backwards compatability but should be reomved eventually
+// Below is only kept for backwards compatibility but should be removed eventually
 router.route( '/download/:opts' ).get( controller.download );
 router.route( '/download' ).post( controller.download );
 router.route( '/opennet' ).get( controller.isOpenNet );
