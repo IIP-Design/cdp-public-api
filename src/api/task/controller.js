@@ -41,19 +41,16 @@ export const download = async ( req, res ) => {
 
   const mimeType = Mime.lookup( url ) || 'application/octet-stream';
 
-  const signedHead = await getSignedUrl({bucket: 'prod', key, type: 'head'});
   const signedGet = await getSignedUrl({bucket: 'prod', key});
 
-  const headReq = key ? signedHead.url : url;
   const getReq = key ? signedGet.url : url;
 
   request
-    .get(headReq)
+    .get(getReq)
     .on( 'error', err => {
       return res.status( 404 ).json( err );
     })
     .on('response', response => {
-      console.log(response.statusCode)
       if (response.statusCode !== 200 ) return res.status( 404 ).send( 'File not found.' );
 
       const fileSize = response.headers['content-length'];

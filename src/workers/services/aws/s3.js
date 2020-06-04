@@ -5,19 +5,15 @@ const AUTHORING_BUCKET = process.env.AWS_S3_AUTHORING_BUCKET;
 const PRODUCTION_BUCKET = process.env.AWS_S3_PRODUCTION_BUCKET;
 
 // Pulls in configs from .env
-const setAccessKeys = env => {
-  AWS.config.update( {
-    accessKeyId: env === 'prod' ? process.env.AWS_S3_PRODUCTION_ACCESS_KEY_ID : process.env.AWS_S3_AUTHORING_ACCESS_KEY_ID,
-    secretAccessKey: env === 'prod' ? process.env.AWS_S3_PRODUCTION_SECRET : process.env.AWS_S3_AUTHORING_SECRET,
-    region: process.env.AWS_REGION
-  } );
-}
+AWS.config.update( {
+  accessKeyId: process.env.AWS_S3_AUTHORING_ACCESS_KEY_ID,
+  secretAccessKey: process.env.AWS_S3_AUTHORING_SECRET,
+  region: process.env.AWS_REGION
+} );
 
 const s3 = new AWS.S3();
 
 export const deleteAllS3Assets = async ( dir, bucket ) => {
-  setAccessKeys();
-
   const listParams = {
     Bucket: bucket,
     Prefix: dir
@@ -42,8 +38,6 @@ export const deleteAllS3Assets = async ( dir, bucket ) => {
 };
 
 export const deleteS3Asset = ( key, bucket ) => {
-  setAccessKeys();
-
   const params = {
     Bucket: bucket,
     Key: key
@@ -53,20 +47,17 @@ export const deleteS3Asset = ( key, bucket ) => {
 };
 
 // add throwing error here
-export const copyS3Asset = async ( key, fromBucket, toBucket ) => {
-  setAccessKeys();
-  
+export const copyS3Asset = async ( key, fromBucket, toBucket ) => {  
   const copyParams = {
     Bucket: toBucket,
     CopySource: encodeURIComponent( `/${fromBucket}/${key}` ),
     Key: key
   };
+
   return s3.copyObject( copyParams ).promise();
 };
 
 export const copyS3AllAssets = async ( dir, fromBucket, toBucket ) => {
-  setAccessKeys();
-
   const listParams = {
     Bucket: fromBucket,
     Prefix: dir
@@ -83,10 +74,7 @@ export const copyS3AllAssets = async ( dir, fromBucket, toBucket ) => {
   if ( listedObjects.IsTruncated ) await copyS3AllAssets( dir, fromBucket, toBucket );
 };
 
-
 export const uploadAsset = ( file, key ) => {
-  setAccessKeys();
-
   const fileContent = fs.readFileSync( file );
   // Setting up S3 upload parameters
   const params = {
@@ -100,11 +88,7 @@ export const uploadAsset = ( file, key ) => {
 };
 
 export const getSignedUrl = params => new Promise( ( resolve, reject ) => {
-  const { bucket, key, expires, type } = params;
-  
-  setAccessKeys( bucket );
-
-  const objectType = type === 'head' ? 'headObject' : 'getObject';
+  const { bucket, key, expires } = params;
 
   s3.getSignedUrl( 'getObject', {
     Bucket: bucket === 'prod' ? PRODUCTION_BUCKET : AUTHORING_BUCKET,
