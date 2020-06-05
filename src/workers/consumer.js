@@ -5,6 +5,7 @@
 import {} from 'dotenv/config';
 import { getConsumerChannel } from './connection';
 import video from './publish/video/video';
+import graphic from './publish/graphic/graphic';
 import pkg from './publish/package/package';
 import document from './utils/document';
 
@@ -44,6 +45,10 @@ const consumePublishCreate = async () => {
         createFn = pkg.handleCreate;
         break;
 
+      case 'create.graphic':
+        createFn = graphic.handleCreate;
+        break;
+
       default:
         console.log( 'Default' );
     }
@@ -70,6 +75,10 @@ const consumePublishUpdate = async () => {
         updateFn = pkg.handleUpdate;
         break;
 
+      case 'update.graphic':
+        updateFn = graphic.handleUpdate;
+        break;
+
       default:
         console.log( 'Default' );
     }
@@ -94,6 +103,10 @@ const consumePublishDelete = async () => {
 
       case 'delete.package':
         deleteFn = pkg.handleDelete;
+        break;
+
+      case 'delete.graphic':
+        deleteFn = graphic.handleDelete;
         break;
 
       default:
