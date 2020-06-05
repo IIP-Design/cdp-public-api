@@ -36,13 +36,13 @@ export const findCategoryTerm = ( termName, locale = 'en-us' ) => parseTermWithL
 );
 
 /**
- * Find a taxonomy term via synonym matching.
+ * Find a taxonomy term via synonym matching and language name match
  * @param tag
  * @param locale
  * @returns {Promise}
  */
 export const findTagTerm = ( tag, locale = 'en-us' ) => parseTermWithLocale(
-  taxonomy.findDocsBySynonym( tag ),
+  taxonomy.findDocsBySynonymOrName( tag ),
   locale
 );
 
@@ -61,7 +61,8 @@ export const convertCategories = async ( termNames, language ) => {
 };
 
 /**
- * Attempt to retrieve taxonomy terms from tags based on synonym mathcing.
+ * Attempt to retrieve taxonomy terms from tags based on
+ * synonym mathcing & language name match
  * @param tags
  * @param language
  * @returns []

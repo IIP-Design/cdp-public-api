@@ -29,10 +29,12 @@ class Taxonomy extends AbstractModel {
         if ( root === term._id ) ret = term;
       } else if ( term.primary ) tree.push( term );
     } );
-    terms.filter( term => !term.primary ).forEach( ( term ) => {
-      const found = terms.find( val => term.parents.includes( val._id ) );
-      if ( found ) found.children.push( term );
-    } );
+    terms
+      .filter( term => !term.primary )
+      .forEach( ( term ) => {
+        const found = terms.find( val => term.parents.includes( val._id ) );
+        if ( found ) found.children.push( term );
+      } );
     return ret;
   }
 
@@ -80,6 +82,31 @@ class Taxonomy extends AbstractModel {
               synonymMapping: {
                 query: name
               }
+            }
+          }
+        }
+      } )
+      .catch( err => err );
+    return result;
+  }
+
+  /**
+   * Searches Elasticsearch for a terms that have a loose match in the
+   * synonymMapping property OR match language name
+   *
+   * @param name
+   * @returns {Promise<*>}
+   */
+  async findDocsBySynonymOrName( name ) {
+    const result = await this.client
+      .search( {
+        index: this.index,
+        type: this.type,
+        body: {
+          query: {
+            multi_match: {
+              query: name,
+              fields: ['synonymMapping', 'language.en']
             }
           }
         }
