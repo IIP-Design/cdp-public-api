@@ -1,0 +1,16 @@
+{
+  "extends": ["@gpa-lab/eslint-config"],
+  "parser": "babel-eslint",
+  "settings": {
+    "import/resolver": {
+      "babel-module": {
+        "alias": {
+          "api": "./src/api",
+          "middleware": "./src/middleware",
+          "services": "./src/services",
+          "workers": "./src/workers"
+        }
+      }
+    }
+  }
+}
