@@ -24,9 +24,9 @@ const parseFindResult = ( result ) => {
 
 /**
  *  Retrieve es doc from ES if it exists.
- * @param {*} projectId id coming from publisher
- * @param {*} index Elastic search index
- * @param {*} type  Elasticsearch document type
+ * @param {string} projectId id coming from publisher
+ * @param {string} index Elastic search index
+ * @param {string} type  Elasticsearch document type
  * @returns {object} Elasticsearch document
  */
 const findDocument = async ( projectId, index, type ) => {
@@ -71,9 +71,9 @@ const _updateDocument = async ( index, type, body, esId ) => client.update( {
 
 /**
  * Delete the package or document specified by projectId from publisher.
- * @param {*} index Elastic search index
- * @param {*} type  Elasticsearch document type
- * @param {*} id  id from publisher
+ * @param {string} index Elastic search index
+ * @param {string} type  Elasticsearch document type
+ * @param {string} id  id from publisher
  * @returns Promise
  */
 const _deleteDocument = async ( index, type, id ) => client.deleteByQuery( {
