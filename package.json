@@ -64,13 +64,12 @@
     "eslint-import-resolver-babel-module": "^5.1.2",
     "eslint-plugin-import": "^2.20.2",
     "eslint-plugin-jest": "^23.13.2",
-    "eslint-plugin-prettier": "^3.1.0",
     "morgan": "^1.9.1",
     "nodemon": "^2.0.2",
     "rimraf": "^2.6.3",
     "start-server-webpack-plugin": "^2.2.5",
     "webpack": "^4.35.3",
-    "webpack-cli": "^3.3.6",
+    "webpack-cli": "^3.3.11",
     "webpack-merge": "^4.2.1",
     "webpack-node-externals": "^1.7.2"
   }
