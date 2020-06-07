@@ -18,7 +18,16 @@ const schema = {
     supportFiles: {
       type: 'array',
       default: [],
-      items: {}
+      items: {
+        type: 'object',
+        properties: {
+          visibility: { type: 'string' },
+          editable: { type: 'boolean' },
+          filename: { type: 'string' },
+          url: { type: 'string' },
+          language: languageSchema
+        }
+      }
     },
     images: {
       type: 'array',
