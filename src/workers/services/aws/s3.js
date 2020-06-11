@@ -12,6 +12,20 @@ AWS.config.update( {
 
 const s3 = new AWS.S3();
 
+
+/**
+ * Returns file extension of filename
+ * @param {string} filename
+ */
+export const getFileExt = ( filename ) => {
+  if ( typeof filename !== 'string' ) return '';
+
+  const index = filename.lastIndexOf( '.' );
+  const hasExt = index !== -1;
+
+  return hasExt ? filename.substr( index + 1 ) : '';
+};
+
 export const deleteAllS3Assets = async ( dir, bucket ) => {
   const listParams = {
     Bucket: bucket,
@@ -102,3 +116,31 @@ export const getSignedUrl = params => new Promise( ( resolve, reject ) => {
     }
   } );
 } );
+
+export const getS3BucketAssets = async ( bucket, dir, fileTypes ) => {
+  const listParams = {
+    Bucket: bucket,
+    Prefix: dir
+  };
+
+  const files = [];
+  const types = Array.isArray( fileTypes ) && fileTypes.length;
+
+  const listedObjects = await s3.listObjectsV2( listParams ).promise();
+  if ( listedObjects.Contents.length === 0 ) return;
+
+  listedObjects.Contents.forEach( ( { Key } ) => {
+    if ( types ) {
+      if ( fileTypes.includes( getFileExt( Key ) ) ) {
+        files.push( Key );
+      }
+    } else {
+      files.push( Key );
+    }
+  } );
+
+  // If more than a page of files, copy next batch
+  if ( listedObjects.IsTruncated ) await getS3BucketAssets( dir, bucket );
+
+  return files;
+};
