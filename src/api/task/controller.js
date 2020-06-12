@@ -1,5 +1,8 @@
 import request from 'request';
 import Mime from 'mime-types';
+import s3Zip from 's3-zip';
+import { getS3BucketAssets } from '../../workers/services/aws/s3';
+import { hasValidToken } from '../modules/auth';
 
 import {getSignedUrl} from '../../workers/services/aws/s3';
 
@@ -87,6 +90,39 @@ export const download = async ( req, res ) => {
         request.get( getReq ).pipe( res )
       }
     })
+};
+
+/**
+ * Zips S3 assets in an applicable s3 folder.
+ * Requires header bearer token for authentication
+ * Request body expects:
+ * {
+ *  folder: S3 directory
+ *  title: Name of zip package
+ *  fileTypes: File extensions to incliude in zip
+ * }
+ * @param {object} req
+ * @param {object} res
+ */
+export const zip = async ( req, res ) => {
+  // 1. Authenticate
+  if ( !hasValidToken( req ) ) {
+    res.status( 401 ).json( { error: 'Unauthorized' } );
+  }
+
+  const { folder, title, fileTypes } = req.body;
+
+  res.set( 'content-type', 'application/zip' );
+  res.setHeader( 'Content-Disposition', `attachment; filename=${title}.zip` );
+
+  // 2. Fetch files form applicabe S3 dir
+  const files = await getS3BucketAssets( process.env.AWS_S3_PRODUCTION_BUCKET, folder, fileTypes );
+
+  // 3. Pipe zip stream to client
+  s3Zip.archive( {
+    region: process.env.AWS_REGION,
+    bucket: process.env.AWS_S3_PRODUCTION_BUCKET
+  }, '', files ).pipe( res );
 };
 
 /**
