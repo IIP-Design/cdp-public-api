@@ -10,6 +10,7 @@ router.route( /^\/download\/(.*)\/([^/]+)$/ ).get( controller.download );
 // Below is only kept for backwards compatibility but should be removed eventually
 router.route( '/download/:opts' ).get( controller.download );
 router.route( '/download' ).post( controller.download );
+router.route( '/zip' ).post( controller.zip );
 router.route( '/opennet' ).get( controller.isOpenNet );
 
 export default router;

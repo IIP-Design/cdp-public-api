@@ -7,6 +7,11 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased](https://github.com/IIP-Design/cdp-public-api/compare/v4.1.0...HEAD)
 _This sections lists changes committed since most recent release_
+
+## 4.2.0
+**Added:**
+- Authenticated task/zip route and handler that returns a zip file of assets in a S3 directory
+
 ## 4.1.1
 **Added:**
 - Added repatriation tag with translations

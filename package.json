@@ -1,6 +1,6 @@
 {
   "name": "cdp-public-api",
-  "version": "4.1.1",
+  "version": "4.2.0",
   "main": "server.js",
   "repository": "git@github.com:IIP-Design/cdp-public-api.git",
   "author": "Office of Design <designdevops@america.gov>",
@@ -43,6 +43,7 @@
     "newrelic": "^6.2.0",
     "node-html-to-image": "^1.1.0",
     "request": "^2.88.0",
+    "s3-zip": "^3.1.3",
     "source-map-support": "^0.5.12",
     "tmp": "0.0.33",
     "tus-js-client": "^1.5.1",
