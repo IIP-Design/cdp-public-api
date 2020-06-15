@@ -11,10 +11,11 @@ const INDEXING_DOMAIN = process.env.INDEXING_DOMAIN || 'commons.america.gov';
  *
  * @returns object  elasticsearch doc
  */
-const parseFindResult = ( result ) => {
+const parseFindResult = result => {
   if ( result && result.hits && result.hits.total === 1 ) {
     // should return only 1 unique result
     const [hit] = result.hits.hits;
+
     return hit;
   }
 };
@@ -26,14 +27,15 @@ const parseFindResult = ( result ) => {
  * @param {string} type  Elasticsearch document type
  * @returns {object} Elasticsearch document
  */
-const findDocument = async ( projectId ) => {
+const findDocument = async projectId => {
   const doc = await client.search( {
     index: 'graphics',
     type: 'graphic',
-    q: `site:${INDEXING_DOMAIN} AND id:${projectId}`
+    q: `site:${INDEXING_DOMAIN} AND id:${projectId}`,
   } );
 
   const foundDoc = parseFindResult( doc );
+
   return foundDoc || null;
 };
 
@@ -45,7 +47,7 @@ const findDocument = async ( projectId ) => {
 const _createDocument = async body => client.index( {
   index: 'graphics',
   type: 'graphic',
-  body
+  body,
 } );
 
 /**
@@ -62,8 +64,8 @@ const _updateDocument = async ( body, esId ) => client.update( {
   type: 'graphic',
   id: esId,
   body: {
-    doc: body
-  }
+    doc: body,
+  },
 } );
 
 /**
@@ -76,7 +78,7 @@ const _updateDocument = async ( body, esId ) => client.update( {
 const _deleteDocument = async id => client.deleteByQuery( {
   index: 'graphics',
   type: 'graphic',
-  q: `site:${INDEXING_DOMAIN} AND id:${id}`
+  q: `site:${INDEXING_DOMAIN} AND id:${id}`,
 } );
 
 /**
@@ -91,6 +93,7 @@ export const updateDocument = async ( projectId, projectData ) => {
   validateSchema( projectData, graphicSchema );
 
   const esGraphicProject = await findDocument( projectId );
+
   if ( !esGraphicProject ) {
     return { error: 'EsDocNotFound' };
   }
@@ -139,23 +142,24 @@ export const createDocument = async ( projectId, projectData ) => {
  * @param projectId
  * @returns Promise
  */
-export const deleteDocument = async ( projectId ) => {
+export const deleteDocument = async projectId => {
   console.log( 'Delete content', projectId );
 
   // delete all documents with a matching site and post_id (projectId)
   return _deleteDocument( projectId )
-    .then( ( result ) => {
+    .then( result => {
       if ( result.failures && result.failures.length > 0 ) {
         return {
           error: 'EsShardFailure',
-          failures: result.failures
+          failures: result.failures,
         };
       }
       if ( !result.deleted ) {
         return { error: 'EsDocNotFound' };
       }
+
       return {
-        deleted: result.deleted
+        deleted: result.deleted,
       };
     } );
 };

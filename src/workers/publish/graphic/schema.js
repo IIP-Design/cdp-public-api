@@ -7,7 +7,8 @@ const schema = {
     site: { type: 'string' },
     type: { type: 'string' },
     title: { type: 'string' },
-    desc: { type: 'string' },
+    descPublic: { type: 'string' },
+    descInternal: { type: 'string' },
     copyright: { type: 'string' },
     visibility: { type: 'string' },
     published: { type: 'string' },
@@ -17,7 +18,7 @@ const schema = {
     language: languageSchema,
     supportFiles: {
       type: 'array',
-      default: [],
+      'default': [],
       items: {
         type: 'object',
         properties: {
@@ -25,13 +26,13 @@ const schema = {
           editable: { type: 'boolean' },
           filename: { type: 'string' },
           url: { type: 'string' },
-          language: languageSchema
-        }
-      }
+          language: languageSchema,
+        },
+      },
     },
     images: {
       type: 'array',
-      default: [],
+      'default': [],
       items: {
         type: 'object',
         properties: {
@@ -44,28 +45,28 @@ const schema = {
           url: { type: 'string' },
           height: { type: 'number' },
           width: { type: 'number' },
-          language: languageSchema
+          language: languageSchema,
+          style: { type: 'string' },
+          social: {
+            type: 'array',
+            'default': [],
+            items: { type: 'string' },
+          },
         },
-        style: { type: 'string' },
-        social: {
-          type: 'array',
-          default: [],
-          items: { type: 'string' }
-        }
-      }
+      },
     },
     categories: {
       type: 'array',
-      default: [],
-      items: { type: 'string' }
+      'default': [],
+      items: { type: 'string' },
     },
     tags: {
       type: 'array',
-      default: [],
-      items: { type: 'string' }
-    }
+      'default': [],
+      items: { type: 'string' },
+    },
   },
-  required: ['id', 'site']
+  required: ['id', 'site'],
 };
 
 export default schema;
