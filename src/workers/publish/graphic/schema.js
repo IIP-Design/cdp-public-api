@@ -7,8 +7,20 @@ const schema = {
     site: { type: 'string' },
     type: { type: 'string' },
     title: { type: 'string' },
-    descPublic: { type: 'string' },
-    descInternal: { type: 'string' },
+    descPublic: {
+      type: 'object',
+      properties: {
+        content: { type: 'string' },
+        visibility: { type: 'string' },
+      },
+    },
+    descInternal: {
+      type: 'object',
+      properties: {
+        content: { type: 'string' },
+        visibility: { type: 'string' },
+      },
+    },
     copyright: { type: 'string' },
     visibility: { type: 'string' },
     published: { type: 'string' },
