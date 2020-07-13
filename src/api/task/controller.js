@@ -1,10 +1,33 @@
 import request from 'request';
 import Mime from 'mime-types';
 import s3Zip from 's3-zip';
-import { getS3BucketAssets } from '../../workers/services/aws/s3';
+import { getS3BucketAssets, getSignedUrl } from '../../workers/services/aws/s3';
 import { hasValidToken } from '../modules/auth';
 
-import {getSignedUrl} from '../../workers/services/aws/s3';
+/**
+ * Returns file extension of filename
+ * @param {string} filename
+ */
+const getFileExt = filename => {
+  if ( typeof filename !== 'string' ) return '';
+
+  const index = filename.lastIndexOf( '.' );
+  const hasExt = index !== -1;
+
+  return hasExt ? filename.substr( index + 1 ) : '';
+};
+
+
+const getValidFilename = filename => {
+  if ( filename && typeof filename === 'string' ) {
+    const ext = getFileExt( filename );
+    const fn = filename.replace( ext, '' ).replace( /[^A-Za-z0-9\s]+/g, '' );
+
+    return `${fn}.${ext}`;
+  }
+
+  return '';
+};
 
 const getParams = req => {
   let filename;
@@ -16,13 +39,14 @@ const getParams = req => {
   } else if ( req.params.opts && !req.params.filename ) {
     // This is mainly kept for backwards compatibility but should be removed eventually
     const opts = JSON.parse( Buffer.from( req.params.opts, 'base64' ).toString() );
-    
-    ({ filename, url, key } = opts);
+
+    ( { filename, url, key } = opts );
   } else {
     // filename is at the end of the URL so we don't need it as the browser will handle it
     let opts = null;
+
     if ( req.params.opts ) {
-      ({ opts } = req.params);
+      ( { opts } = req.params );
     } else if ( req.params['0'] ) {
       // some base64 encodings for non-latin filenames have slashes forcing us to use regex
       // in the route which prevents the use of named parameters
@@ -36,25 +60,25 @@ const getParams = req => {
     url = encodeURI( Buffer.from( opts, 'base64' ).toString() );
   }
 
-  return { filename, key, url }
-}
+  return { filename, key, url };
+};
 
 export const download = async ( req, res ) => {
-  const { filename, key, url } = getParams(req)
+  const { filename, key, url } = getParams( req );
+
+  const fn = getValidFilename( filename );
 
   const mimeType = Mime.lookup( url ) || 'application/octet-stream';
 
-  const signedGet = await getSignedUrl({bucket: 'prod', key});
+  const signedGet = await getSignedUrl( { bucket: 'prod', key } );
 
   const getReq = key ? signedGet.url : url;
 
   request
-    .get(getReq)
-    .on( 'error', err => {
-      return res.status( 404 ).json( err );
-    })
-    .on('response', response => {
-      if (response.statusCode !== 200 ) return res.status( 404 ).send( 'File not found.' );
+    .get( getReq )
+    .on( 'error', err => res.status( 404 ).json( err ) )
+    .on( 'response', response => {
+      if ( response.statusCode !== 200 ) return res.status( 404 ).send( 'File not found.' );
 
       const fileSize = response.headers['content-length'];
 
@@ -69,7 +93,7 @@ export const download = async ( req, res ) => {
           'Content-Range': `bytes ${start}-${end}/${fileSize}`,
           'Accept-Ranges': 'bytes',
           'Content-Length': chunksize,
-          'Content-Type': mimeType
+          'Content-Type': mimeType,
         };
 
         res.writeHead( 206, head );
@@ -80,16 +104,16 @@ export const download = async ( req, res ) => {
             'Accept-Encoding': 'identity',
             connection: 'keep-alive',
             range,
-            'accept-ranges': 'bytes'
-          })
-          .pipe(res)
+            'accept-ranges': 'bytes',
+          } )
+          .pipe( res );
       } else {
         if ( fileSize ) res.setHeader( 'Content-Length', fileSize );
         res.setHeader( 'Content-Type', mimeType );
-        res.setHeader( 'Content-Disposition', `attachment${filename ? `; filename=${filename}` : ''}` );
-        request.get( getReq ).pipe( res )
+        res.setHeader( 'Content-Disposition', `attachment${filename ? `; filename=${fn}` : ''}` );
+        request.get( getReq ).pipe( res );
       }
-    })
+    } );
 };
 
 /**
@@ -121,7 +145,7 @@ export const zip = async ( req, res ) => {
   // 3. Pipe zip stream to client
   s3Zip.archive( {
     region: process.env.AWS_REGION,
-    bucket: process.env.AWS_S3_PRODUCTION_BUCKET
+    bucket: process.env.AWS_S3_PRODUCTION_BUCKET,
   }, '', files ).pipe( res );
 };
 
@@ -144,9 +168,11 @@ const ipToNum = ip => Number( ip.split( '.' )
  */
 const checkRange = ( ip, range ) => {
   let { start, end } = range;
+
   start = ipToNum( start );
   if ( end ) end = ipToNum( end );
   else end = start;
+
   return ip >= start && ip <= end;
 };
 
@@ -158,13 +184,16 @@ const checkRange = ( ip, range ) => {
 const getOpenNetIPs = () => {
   const rangesStr = process.env.OPENNET_IPS || '';
   const ranges = [];
-  rangesStr.split( ' ' ).forEach( ( rangeStr ) => {
+
+  rangesStr.split( ' ' ).forEach( rangeStr => {
     const rangeArgs = rangeStr.split( ':' );
+
     ranges.push( {
       start: rangeArgs[0],
-      end: rangeArgs[1]
+      end: rangeArgs[1],
     } );
   } );
+
   return ranges;
 };
 
@@ -181,16 +210,19 @@ export const isOpenNet = ( req, res ) => {
     || req.connection.remoteAddress
     || req.socket.remoteAddress
     || req.connection.socket.remoteAddress;
+
   if ( !ip ) return res.json( { error: 1, message: 'IP Address not found.', isOpenNet: false } );
   const ipnum = ipToNum( ip );
   const OpenNetIPs = getOpenNetIPs();
   let openNet = false;
-  OpenNetIPs.forEach( ( range ) => {
+
+  OpenNetIPs.forEach( range => {
     if ( checkRange( ipnum, range ) ) openNet = true;
   } );
   console.log( 'Found IP: ', ip, ' OpenNet: ', openNet );
+
   return res.json( {
     error: 0,
-    isOpenNet: openNet
+    isOpenNet: openNet,
   } );
 };

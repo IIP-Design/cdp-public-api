@@ -7,6 +7,8 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased](https://github.com/IIP-Design/cdp-public-api/compare/v5.0.0...HEAD)
 _This sections lists changes committed since most recent release_
+**Fixed:**
+- API error due to invalid characters in the Content-Disposition filename
 
 # [5.0.0](https://github.com/IIP-Design/cdp-public-api/compare/v4.2.0...v5.0.0)(2020-07-10)
 **Added:**
