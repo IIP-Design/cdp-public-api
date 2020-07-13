@@ -1,8 +1,7 @@
-
 import client from '../../services/elasticsearch';
 import * as validate from '../modules/validate';
 import { hasValidToken, stripInternalContent } from '../modules/auth';
-
+import { transformThumbnailUrls } from './utils';
 
 // TODO: implement multisearch query
 const multiSearch = async ( req, res ) => {
@@ -14,9 +13,9 @@ const singleSearch = async ( req, res ) => {
     options: {
       ignoreUnavailable: true,
       allowNoIndices: true,
-      requestCache: true
+      requestCache: true,
     },
-    error: {}
+    error: {},
   };
 
   data = validate.stringOrStringArray( {
@@ -26,7 +25,7 @@ const singleSearch = async ( req, res ) => {
     type: req.body.type,
     index: req.body.index,
     sort: req.body.sort,
-    scroll: req.body.scroll
+    scroll: req.body.scroll,
   },
   data );
 
@@ -36,39 +35,47 @@ const singleSearch = async ( req, res ) => {
 
   data = validate.number( {
     from: req.body.from,
-    size: req.body.size
+    size: req.body.size,
   },
   data );
 
   if ( Object.keys( data.error ).length > 0 ) {
     return res.status( 400 ).json( {
       error: true,
-      message: data.error
+      message: data.error,
     } );
   }
 
   try {
-    res.json( await client.search( data.options ).then( ( esResponse ) => {
+    res.json( await client.search( data.options ).then( async esResponse => {
+      let filtered;
+
       if ( !hasValidToken( req ) ) {
-        return stripInternalContent( esResponse );
+        filtered = stripInternalContent( esResponse );
+      } else {
+        filtered = { ...esResponse };
       }
 
-      return esResponse;
+      const transformed = transformThumbnailUrls( filtered );
+
+      return transformed;
     } ) );
   } catch ( err ) {
     // const message = JSON.parse( err.response ).error.caused_by.reason;
     console.error( 'search error', '\r\n', JSON.stringify( err, null, 2 ) );
     let message;
+
     if ( err.response ) {
       message = JSON.parse( err.response );
       if ( message.error ) message = message.error;
       if ( message.reason ) message = message.reason;
       else message = err;
     } else message = err;
+
     // const message = JSON.parse( err.response ).error.reason;
     return res.status( 400 ).json( {
       error: true,
-      message
+      message,
     } );
   }
 };
@@ -77,6 +84,7 @@ export const search = async ( req, res ) => {
   if ( req.query.m ) {
     return multiSearch( req, res );
   }
+
   return singleSearch( req, res );
 };
 
@@ -84,7 +92,7 @@ export const scroll = async ( req, res ) => {
   if ( !req.body.scrollId ) {
     return res.status( 400 ).json( {
       error: true,
-      message: 'Body must contain scrollId.'
+      message: 'Body must contain scrollId.',
     } );
   }
   try {
@@ -94,16 +102,18 @@ export const scroll = async ( req, res ) => {
   } catch ( err ) {
     console.error( 'scroll error', '\r\n', JSON.stringify( err, null, 2 ) );
     let message;
+
     if ( err.response ) {
       message = JSON.parse( err.response );
       if ( message.error ) message = message.error;
       if ( message.reason ) message = message.reason;
       else message = err;
     } else message = err;
+
     // const message = JSON.parse( err.response ).error.reason;
     return res.status( 400 ).json( {
       error: true,
-      message
+      message,
     } );
   }
 };
