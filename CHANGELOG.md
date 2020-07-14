@@ -5,8 +5,19 @@
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
-## [Unreleased](https://github.com/IIP-Design/cdp-public-api/compare/v4.1.0...HEAD)
+## [Unreleased](https://github.com/IIP-Design/cdp-public-api/compare/v5.0.0...HEAD)
 _This sections lists changes committed since most recent release_
+**Fixed:**
+- API error due to invalid characters in the Content-Disposition filename
+
+# [5.0.0](https://github.com/IIP-Design/cdp-public-api/compare/v4.2.0...v5.0.0)(2020-07-10)
+**Added:**
+- descPublic and descInternal properties to the graphic schema
+- Graphic publishing
+- Functionality to strip internal field content if valid token is not present 
+
+**Removed:**
+- The desc property from the graphic schema
 
 ## 4.2.0
 **Added:**
