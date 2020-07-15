@@ -29,7 +29,7 @@ const getValidFilename = filename => {
   return '';
 };
 
-const getParams = req => {
+const getParams = ( req, res ) => {
   let filename;
   let key;
   let url;
@@ -64,7 +64,7 @@ const getParams = req => {
 };
 
 export const download = async ( req, res ) => {
-  const { filename, key, url } = getParams( req );
+  const { filename, key, url } = getParams( req, res );
 
   const fn = getValidFilename( filename );
 
@@ -99,7 +99,7 @@ export const download = async ( req, res ) => {
         res.writeHead( 206, head );
 
         request
-          .get( signed.url, {
+          .get( getReq, {
             Accept: '*/*',
             'Accept-Encoding': 'identity',
             connection: 'keep-alive',
