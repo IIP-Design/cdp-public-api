@@ -70,9 +70,15 @@ export const download = async ( req, res ) => {
 
   const mimeType = Mime.lookup( url ) || 'application/octet-stream';
 
-  const signedGet = await getSignedUrl( { bucket: 'prod', key } );
+  let getReq;
 
-  const getReq = key ? signedGet.url : url;
+  if ( key ) {
+    const signedGet = await getSignedUrl( { bucket: 'prod', key } );
+
+    getReq = signedGet.url;
+  } else {
+    getReq = url;
+  }
 
   request
     .get( getReq )
@@ -99,7 +105,7 @@ export const download = async ( req, res ) => {
         res.writeHead( 206, head );
 
         request
-          .get( signed.url, {
+          .get( getReq, {
             Accept: '*/*',
             'Accept-Encoding': 'identity',
             connection: 'keep-alive',
@@ -123,7 +129,7 @@ export const download = async ( req, res ) => {
  * {
  *  folder: S3 directory
  *  title: Name of zip package
- *  fileTypes: File extensions to incliude in zip
+ *  fileTypes: File extensions to include in zip
  * }
  * @param {object} req
  * @param {object} res
@@ -139,7 +145,7 @@ export const zip = async ( req, res ) => {
   res.set( 'content-type', 'application/zip' );
   res.setHeader( 'Content-Disposition', `attachment; filename=${title}.zip` );
 
-  // 2. Fetch files form applicabe S3 dir
+  // 2. Fetch files form applicable S3 dir
   const files = await getS3BucketAssets( process.env.AWS_S3_PRODUCTION_BUCKET, folder, fileTypes );
 
   // 3. Pipe zip stream to client
