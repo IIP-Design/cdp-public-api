@@ -99,7 +99,7 @@ export const download = async ( req, res ) => {
         res.writeHead( 206, head );
 
         request
-          .get( getReq, {
+          .get( signed.url, {
             Accept: '*/*',
             'Accept-Encoding': 'identity',
             connection: 'keep-alive',
