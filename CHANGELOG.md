@@ -10,6 +10,7 @@ _This sections lists changes committed since most recent release_
 
 **Added:**
 - signedUrl support for embedded modules
+- The use field to the `videoSchema` and its mapping
 
 # [5.1.0](https://github.com/IIP-Design/cdp-public-api/compare/v5.0.0...v5.1.0)(2020-07-15)
 

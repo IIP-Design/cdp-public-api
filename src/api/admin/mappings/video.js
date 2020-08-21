@@ -318,6 +318,15 @@ let _mapping = {
               burnedInCaptions: {
                 type: 'boolean'
               },
+              use: {
+                type: 'text',
+                fields: {
+                  keyword: {
+                    type: 'keyword',
+                    ignore_above: 256
+                  }
+                }
+              },
               downloadUrl: {
                 type: 'text',
                 fields: {
