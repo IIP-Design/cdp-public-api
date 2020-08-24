@@ -1,5 +1,7 @@
 import client from '../../../services/elasticsearch';
-import validate, { compileValidationErrors } from './validate';
+import { validateSchema } from '../validate';
+import videoSchema from './schema';
+
 import { convertProjectTaxonomies } from '../../utils/taxonomy';
 
 const INDEXING_DOMAIN = process.env.INDEXING_DOMAIN || 'commons.america.gov';
@@ -10,9 +12,10 @@ const INDEXING_DOMAIN = process.env.INDEXING_DOMAIN || 'commons.america.gov';
  *
  * @returns string  esId
  */
-const parseFindResult = ( result ) => {
+const parseFindResult = result => {
   if ( result && result.hits && result.hits.total === 1 ) { // should return only 1 unique result
     const [hit] = result.hits.hits;
+
     return hit._id;
   }
 };
@@ -20,27 +23,17 @@ const parseFindResult = ( result ) => {
 /**
  * Retrieve es project id from ES if it exists.
  */
-const findDocumentId = async ( projectId ) => {
+const findDocumentId = async projectId => {
   const doc = await client
     .search( {
       index: 'videos',
       type: 'video',
-      q: `site:${INDEXING_DOMAIN} AND post_id:${projectId}`
+      q: `site:${INDEXING_DOMAIN} AND post_id:${projectId}`,
     } );
 
   const id = parseFindResult( doc );
-  return id || null;
-};
 
-/**
- * Validate the incoming data against expected schema.
- */
-const validateSchema = ( data ) => {
-  const result = validate( data );
-  if ( !result.valid ) {
-    throw compileValidationErrors( result.errors );
-  }
-  return true;
+  return id || null;
 };
 
 /**
@@ -51,7 +44,7 @@ const validateSchema = ( data ) => {
 const _createDocument = async body => client.index( {
   index: 'videos',
   type: 'video',
-  body
+  body,
 } );
 
 /**
@@ -65,8 +58,8 @@ const _updateDocument = async ( body, esId ) => client.update( {
   type: 'video',
   id: esId,
   body: {
-    doc: body
-  }
+    doc: body,
+  },
 } );
 
 /**
@@ -77,7 +70,7 @@ const _updateDocument = async ( body, esId ) => client.update( {
 const _deleteDocuments = async projectId => client.deleteByQuery( {
   index: 'videos',
   type: 'video',
-  q: `site:${INDEXING_DOMAIN} AND post_id:${projectId}`
+  q: `site:${INDEXING_DOMAIN} AND post_id:${projectId}`,
 } );
 
 
@@ -90,14 +83,16 @@ const _deleteDocuments = async projectId => client.deleteByQuery( {
 export const updateDocument = async ( projectId, projectData ) => {
   console.log( 'Update content', projectId, projectData );
 
-  validateSchema( projectData );
+  validateSchema( projectData, videoSchema );
 
   const esId = await findDocumentId( projectId );
+
   if ( !esId ) {
     return { error: 'EsDocNotFound' };
   }
 
   const convertedProject = await convertProjectTaxonomies( projectData );
+
   return _updateDocument( convertedProject, esId );
 };
 
@@ -110,9 +105,10 @@ export const updateDocument = async ( projectId, projectData ) => {
 export const createDocument = async ( projectId, projectData ) => {
   console.log( 'Index new content', projectId, projectData );
 
-  validateSchema( projectData );
+  validateSchema( projectData, videoSchema );
 
   const convertedProject = await convertProjectTaxonomies( projectData );
+
   return _createDocument( convertedProject );
 };
 
@@ -121,23 +117,24 @@ export const createDocument = async ( projectId, projectData ) => {
  * @param projectId
  * @returns Promise
  */
-export const deleteDocument = async ( projectId ) => {
+export const deleteDocument = async projectId => {
   console.log( 'Delete content', projectId );
 
   // delete all documents with a matching site and post_id (projectId)
   return _deleteDocuments( projectId )
-    .then( ( result ) => {
+    .then( result => {
       if ( result.failures && result.failures.length > 0 ) {
         return {
           error: 'EsShardFailure',
-          failures: result.failures
+          failures: result.failures,
         };
       }
       if ( !result.deleted ) {
         return { error: 'EsDocNotFound' };
       }
+
       return {
-        deleted: result.deleted
+        deleted: result.deleted,
       };
     } );
 };
