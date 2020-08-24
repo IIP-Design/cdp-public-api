@@ -45,6 +45,7 @@ const videoSchema = {
               type: 'object',
               properties: {
                 burnedInCaptions: { type: 'string' },
+                use: { type: 'string' },
                 downloadUrl: { type: 'string' },
                 streamUrl: {
                   type: 'array',
