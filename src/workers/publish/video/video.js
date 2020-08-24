@@ -43,8 +43,8 @@ async function handleCreate( data ) {
     exchangeName: 'publish',
     routingKey: 'result.create.video',
     data: {
-      projectId
-    }
+      projectId,
+    },
   } );
 
   console.log( '[x] PUBLISHED publish video create result' );
@@ -77,8 +77,8 @@ async function handleUpdate( data ) {
     exchangeName: 'publish',
     routingKey: 'result.update.video',
     data: {
-      projectId
-    }
+      projectId,
+    },
   } );
 
   console.log( '[x] PUBLISHED publish update result' );
@@ -113,8 +113,8 @@ async function handleDelete( data ) {
     exchangeName: 'publish',
     routingKey: 'result.delete.video',
     data: {
-      projectId
-    }
+      projectId,
+    },
   } );
 
   console.log( '[x] PUBLISHED publish video delete result' );
@@ -123,5 +123,5 @@ async function handleDelete( data ) {
 export default {
   handleCreate,
   handleUpdate,
-  handleDelete
+  handleDelete,
 };

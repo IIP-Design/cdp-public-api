@@ -48,7 +48,7 @@ export const hasValidToken = req => {
 
 /**
  * Walk the object tree and set known internal fields
- * to an epmty string ''.
+ * to an empty string ''.
  * TODO : This function should not hardcode internal
  * fields names but set the parent obj (or all siblings)
  * to empty.  Requires more robust testing so opted
@@ -110,7 +110,7 @@ export const stripInternalContent = response => {
           return { ...hit, _source: source };
         } );
 
-      // if hits existed intially and were stripped due to internal visisiblity
+      // if hits existed intially but were stripped due to internal visibility
       // flag, send internal indicator to the client
       if ( originalHits && !_hits.length ) {
         _response.internal = true;
