@@ -32,7 +32,18 @@ const schema = {
         properties: {
           id: { type: 'string' },
           name: { type: 'string' },
-          abbr: { type: 'string' }
+          abbr: { type: 'string' },
+          offices: {
+            type: 'array',
+            default: [],
+            items: {
+              type: 'object',
+              properties: {
+                id: { type: 'string' },
+                name: { type: 'string' }
+              }
+            }
+          }
         }
       }
     },
