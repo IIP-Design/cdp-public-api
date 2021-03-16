@@ -60,7 +60,7 @@ const singleSearch = async ( req, res ) => {
       filtered = { ...esResponse };
     }
 
-    const transformed = await transformThumbnailUrls( filtered );
+    const transformed = filtered.length ? await transformThumbnailUrls( filtered ) : filtered;
 
     res.json( transformed );
   } catch ( err ) {
