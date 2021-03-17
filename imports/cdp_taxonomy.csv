@@ -1,4 +1,4 @@
-Parent (categories from card sort),Child Term (cards from sort),Terms with Multiple Parents,Skip - Child Term is a Parent Term ,Synonyms - Alternatives from card sort,Lang: Spanish | es-es,Lang: French | fr-fr,Lang: Portuguese (Brazil) | pt-br,Lang: Arabic | ar,Lang: Persian | fa-ir,Lang: Chinese | zh-cn,Lang: Russian | ru-ru,Lang: Bahasa Indonesian | id-id,Lang: Urdu | ur
+Parent (categories from card sort),Child Term (cards from sort),Terms with Multiple Parents,"Skip - Child Term is a Parent Term ",Synonyms - Alternatives from card sort,Lang: Spanish | es-es,Lang: French | fr-fr,Lang: Portuguese (Brazil) | pt-br,Lang: Arabic | ar,Lang: Persian | fa-ir,Lang: Chinese | zh-cn,Lang: Russian | ru-ru,Lang: Bahasa Indonesian | id-id,Lang: Urdu | ur
 About America,,,,About United States | About U.S. | About U.S.A | About USA | Info About U.S  | Info About U.S.A | Info About U.S.A,conozca Estados Unidos,Amérique,sobre os Estados Unidos,عن أميركا,درباره آمریکا,美国概览,Об Америке,Tentang Amerika,امریکہ سے متعلق
 ,about america,,Parent Term,,conozca Estados Unidos,Amérique,sobre os Estados Unidos,عن أميركا,درباره آمریکا,美国概览,Об Америке,Tentang Amerika,امریکہ سے متعلق
 ,american culture,,,United States culture | US culture | U.S. culture | U.S.A culture,Cultura de Estados Unidos,Culture américaine,Cultura americana,الثقافة الأميركية,فرهنگ آمریکایی,美国文化,Американская культура,Budaya Amerika,امریکی ثقافت
@@ -78,6 +78,7 @@ Economic Diplomacy | Economic Policy & Development | Economic Issues
 économiques",Oportunidade econômica,فرص اقتصادية,فرصت های اقتصادی,经济机会,"Экономические
 возможности",Peluang  Ekonomi,اقتصادی موقع
 ,economic sector,,,,Sector económico,secteur économique,setor economico,القطاع الاقتصادي,بخش اقتصادی,經濟部門,экономический сектор,sektor ekonomi,اقتصادی شعبے
+,economy,,,,economía,économie,economia,اقتصاد,اقتصاد,经济,экономия,ekonomi,معیشت
 ,employment,MULTIPLE,,,empleo,emploi,emprego,توظيف,استخدام,僱用,занятость,pekerjaan,روزگار
 ,entrepreneurship,,,,espíritu empresarial,Esprit d'entreprise,empreendedorismo,ريادة الاعمال,کارآفرینی,创业 ,предпринимательство,Kewirausahaan,کاروباری تنظیم کار
 ,exchange,MULTIPLE,,,intercambiar,échange,troca,تبادل,تبادل,交換,обмен,bertukar,تبادلہ
@@ -153,9 +154,9 @@ violento",مكافحة التطرّف العنيف,مقابله با افراط 
 ,emergency incident,MULTIPLE,,,incidente de emergencia,incident d'urgence,incidente de emergência,حادث طارئ,حادثه اضطراری,緊急事件,аварийный инцидент,insiden darurat,ہنگامی واقعہ
 ,emergency planning,MULTIPLE,,,planificación de emergencias,planification d'urgence,planejamento de emergência,تخطيط الطوارئ,برنامه ریزی اضطراری,應急計劃,планирование чрезвычайных ситуаций,perencanaan darurat,ہنگامی منصوبہ بندی
 ,emergency response,,,,respuesta de emergencia,réponse d'urgence,Resposta de emergência,رد طارئ,پاسخ اضطرار ی,應急響應,аварийного реагирования,respon darurat,ہنگامی ردعمل
-,global issues,,Parent Term,,Asuntos mundiales,Questions mondiales,Questões globais,قضايا عالمية,مسائل جهانی,全球事务,Глобальные вопросы,Isu Global,عالمگیر مسائل
 ,international relations,MULTIPLE,,,Relaciones internacionales,Relations internationales,Relações internacionais,العلاقات الدولية,روابط بین المللی,国际关系,"Международные
 отношения",Hubungan Internasional,بین الاقوامی تعلقات
+,immigration,,,,inmigración,immigration,imigração,الهجرة,مهاجرت,移民,иммиграция,imigrasi,ہجرت
 ,massacre,,,,masacre,massacre,massacre,مذبحة,قتل عام,屠殺,бойня,pembantaian,قتل عام
 ,peace process,MULTIPLE,,,proceso de paz,procédé de paix,processo de paz,عملية السلام,روند صلح,和平進程,мирный процесс,proses perdamaian,امن عمل
 ,post-war reconstruction,MULTIPLE,,,reconstrucción de posguerra,reconstruction d'après-guerre,reconstrução pós-guerra,إعادة الإعمار بعد الحرب,بازسازی پس از جنگ,戰後重建,послевоенная реконструкция,rekonstruksi pasca perang,جنگ کے بعد تعمیر
@@ -174,6 +175,7 @@ Health,,,,,salud,Santé,saúde,الصحة,بهداشت,健康,Здоровье,k
 ,non-governmental organization (NGO),MULTIPLE,,,organización no gubernamental (ONG),organisation non gouvernementale (ONG),organização não governamental (ONG),منظمة غير حكومية (NGO),سازمان غیردولتی (NGO),非政府組織（NGO）,неправительственная организация (НПО),organisasi non-pemerintah (LSM),غیر سرکاری تنظیم (این جی او)
 ,non-human diseases,,,,enfermedades no humanas,maladies non-humaines,doenças não humanas,أمراض غير بشرية,بیماری های غیر انسانی,非人類疾病,нечеловеческие заболевания,penyakit non-manusia,غیر انسانی بیماریوں
 ,treatment,,,,tratamiento,traitement,tratamento,علاج او معاملة,رفتار,治療,лечение,pengobatan,علاج
+,vaccine,,,,vacuna,vaccin,vacina,مصل,واکسن,疫苗,вакцина,vaksin,ویکسین
 Human Rights,,,,,derechos humanos,Droits de l’homme,direitos humanos,حقوق الإنسان,حقوق بشر,人权,Права человека,Hak asasi manusia (HAM),انسانی حقوق
 ,discrimination,,,,discriminación,discrimination,discriminação,تمييز,تبعیض,區別,дискриминация,diskriminasi,امتیازی سلوک
 ,employment,MULTIPLE,,,empleo,emploi,emprego,توظيف,استخدام,僱用,занятость,pekerjaan,روزگار
@@ -212,7 +214,10 @@ Good Governance,,,,Politics | Governance | Democratic Governance,buen gobierno,G
 ,Michael R. Pompeo,,,,Michael R. Pompeo,Michael R. Pompeo,Michael R. Pompeo,Michael R. Pompeo,Michael R. Pompeo,Michael R. Pompeo,Michael R. Pompeo,Michael R. Pompeo,Michael R. Pompeo
 ,Donald J. Trump,,,,Donald J. Trump,Donald J. Trump,Donald J. Trump,Donald J. Trump,Donald J. Trump,Donald J. Trump,Donald J. Trump,Donald J. Trump,Donald J. Trump
 ,POTUS,,,,POTUS,POTUS,POTUS,POTUS,POTUS,POTUS,POTUS,POTUS,POTUS
-,Secretary of State,,,,Secretary of State,Secretary of State,Secretary of State,Secretary of State,Secretary of State,Secretary of State,Secretary of State,Secretary of State,Secretary of State
+,Spokesperson,,,,Spokesperson,Spokesperson,Spokesperson,Spokesperson,Spokesperson,Spokesperson,Spokesperson,Spokesperson,Spokesperson
+,Antony Blinken,,,,Antony Blinken,Antony Blinken,Antony Blinken,Antony Blinken,Antony Blinken,Antony Blinken,Antony Blinken,Antony Blinken,Antony Blinken
+,Joseph R. Biden,,,,Joseph R. Biden,Joseph R. Biden,Joseph R. Biden,Joseph R. Biden,Joseph R. Biden,Joseph R. Biden,Joseph R. Biden,Joseph R. Biden,Joseph R. Biden
+,Ned Price,,,,Ned Price,Ned Price,Ned Price,Ned Price,Ned Price,Ned Price,Ned Price,Ned Price,Ned Price
 Religion & Values,,,,,Religión y valores,Religion et valeurs,Religião e Valores,الدين والقيم,دین و ارزش ها,宗教與價值觀,Религия и ценности,Agama & Nilai,مذہب اور اقدار
 ,interfaith,,,,interreligioso,interconfessionnel,interfé,الأديان,مذهبی,信仰,межконфессиональный,antaragama,انٹرفی
 ,interreligious dialogue,MULTIPLE,,,diálogo interreligioso,dialogue interreligieux,diálogo inter-religioso,الحوار بين الاديان,گفتگوی مذهبی,宗教間對話,межрелигиозный диалог,dialog antaragama,مداخلت کی بات چیت
@@ -224,7 +229,7 @@ Religion & Values,,,,,Religión y valores,Religion et valeurs,Religião e Valore
 ,religious institutions,,,,instituciones religiosas,institutions religieuses,instituições religiosas,المؤسسات الدينية,موسسات مذهبی,宗教機構,религиозные учреждения,institusi agama,مذہبی اداروں
 ,religious leader,,,,líder religioso,leader réligieux,líder religioso,قائد ديني,رهبر مذهبی,宗教領袖,религиозный лидер,pemimpin religius,مذہبی رہنما
 ,religious text,,,,texto religioso,texte religieux,texto religioso,النص الديني,متن مذهبی,宗教文本,религиозный текст,teks agama,مذہبی متن
-,values,MULTIPLE,Parent Term,,valores,valeurs,valores,القيم,ارزش های,值,значения,nilai-nilai,اقدار
+,values,MULTIPLE,"Parent Term",,valores,valeurs,valores,القيم,ارزش های,值,значения,nilai-nilai,اقدار
 Science & Technology,,,,,ciencia y tecnología,Sciences & technologie,ciência & tecnologia,العلوم والتكنولوجيا,علم و فناوری,科学技术,Наука и технологии,IPTEK,سائنس اور ٹیکنالوجی
 ,biomedical science,MULTIPLE,,,ciencia Biomedica,science biomédicale,Ciência biomédica,علم الطب الحيوي,علم پزشکی,生物醫學科學,биомедицинская наука,ilmu biomedis,حیاتیاتی سائنس
 ,mathematics,MULTIPLE,,,matemáticas,mathématiques,matemática,الرياضيات,ریاضیات,數學,математика,matematika,ریاضی
