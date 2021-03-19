@@ -1,8 +1,9 @@
-import request from 'request';
 import Mime from 'mime-types';
+import request from 'request';
 import s3Zip from 's3-zip';
-import { getS3BucketAssets, getSignedUrl } from '../../workers/services/aws/s3';
-import { hasValidToken } from '../modules/auth';
+
+import { getS3BucketAssets, getSignedUrl } from 'workers/services/aws/s3';
+import { hasValidToken } from 'api/modules/auth';
 
 /**
  * Returns file extension of filename

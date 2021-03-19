@@ -1,7 +1,8 @@
 import fs from 'fs';
-import tus from 'tus-js-client';
+
 import Request from 'request';
 import Stream from 'stream';
+import tus from 'tus-js-client';
 
 /**
  * Upload the video at the provided filePath to Cloudflare Stream.

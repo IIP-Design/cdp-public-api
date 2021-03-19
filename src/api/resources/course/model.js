@@ -1,6 +1,7 @@
-import AbstractModel from '../../modules/abstractModel';
-import Ajv from 'ajv/lib/ajv';
-import courseSchema from '../../modules/schema/course';
+import Ajv from 'ajv';
+
+import AbstractModel from 'api/modules/abstractModel';
+import courseSchema from 'api/modules/schema/course';
 
 /**
  * Course Content Model helps in managing assets within JSON.
@@ -31,7 +32,7 @@ class Course extends AbstractModel {
   }
 
   /**
-   * Returns an array of asssets (just thumbnail for now).
+   * Returns an array of assets (just thumbnail for now).
    *
    * @returns {Array}
    */

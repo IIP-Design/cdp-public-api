@@ -1,10 +1,12 @@
 import path from 'path';
+
 import axios from 'axios';
 import getStream from 'get-stream';
 import mammoth from 'mammoth';
-import tmp from 'tmp';
 import nodeHtmlToImage from 'node-html-to-image';
+import tmp from 'tmp';
 import xss from 'xss';
+
 import { getSignedUrl, uploadAsset } from '../services/aws/s3';
 
 tmp.setGracefulCleanup( { unsafeCleanup: true } );
