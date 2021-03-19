@@ -2,8 +2,8 @@
   "name": "cdp-public-api",
   "version": "5.2.2",
   "main": "server.js",
-  "repository": "git@github.com:IIP-Design/cdp-public-api.git",
-  "author": "Office of Design <designdevops@america.gov>",
+  "author": "U.S. Department of State, Bureau of Global Public Affairs Digital Lab <gpa-lab@america.gov>",
+  "description": "Rest API that manages the inter-connections between the Lab's Content Distribution Platform microservices",
   "license": "MIT",
   "scripts": {
     "build:clear": "rimraf build",
@@ -73,5 +73,9 @@
     "webpack-cli": "^4.5.0",
     "webpack-merge": "^5.7.3",
     "webpack-node-externals": "^2.5.2"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com:IIP-Design/cdp-public-api.git"
   }
 }
