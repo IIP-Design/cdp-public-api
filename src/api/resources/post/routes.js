@@ -7,7 +7,7 @@ import asyncResponse from '../../../middleware/asyncResponse';
 import {
   translateCategories,
   tagCategories,
-  synonymCategories
+  synonymCategories,
 } from '../../../middleware/categories';
 
 const router = new Router();
@@ -24,7 +24,7 @@ router
     tagCategories,
     synonymCategories,
     translateCategories( PostModel ),
-    controller.indexDocument
+    controller.indexDocument,
   );
 
 // Route: /v1/post/[uuid]
@@ -34,7 +34,7 @@ router
     validate( PostModel, false ),
     asyncResponse( false ),
     controller.setRequestDocWithRetry,
-    controller.updateDocumentById
+    controller.updateDocumentById,
   )
   .get( controller.getDocumentById )
   .delete( deleteCtrl( PostModel ), controller.deleteDocumentById );

@@ -78,12 +78,15 @@ class AbstractModel {
   getUnit( index ) {
     if ( !this.body ) return {};
     const units = this.getUnits( this.body );
+
     if ( units.length > index ) return units[index];
+
     return {};
   }
 
   async prepareDocumentForPatch( req ) {
     const docFromES = await this.findDocumentByQuery( req.body ).then( parser.parseUniqueDocExists() ); // eslint-disable-line max-len
+
     if ( docFromES ) {
       this.esAssets = this.getAssets( docFromES );
       req.esDoc = docFromES;
@@ -103,6 +106,7 @@ class AbstractModel {
       this.esAssets = this.getAssets( req.esDoc );
     } else {
       const docFromES = await this.findDocumentByQuery( req.body ).then( parser.parseUniqueDocExists() ); // eslint-disable-line max-len
+
       if ( docFromES ) {
         this.esAssets = this.getAssets( docFromES );
         req.esDoc = docFromES;
@@ -123,21 +127,24 @@ class AbstractModel {
   async prepareCategoriesForUpdate( req ) {
     this.body = req.body;
     // Obtain the category ID list if available
-    const categoryIds =
-      req.body.categories && req.body.categories.length > 0 ? req.body.categories.slice( 0 ) : [];
+    const categoryIds
+      = req.body.categories && req.body.categories.length > 0 ? req.body.categories.slice( 0 ) : [];
+
     // Remove the categories property so that we can replace it with translated version
     delete req.body.categories;
     // Set requestId for temp files (if needed in future)
     this.requestId = req.requestId;
     // Iterate the units and create a category translation array for each
     this.reqUnits = this.getUnits( req.body );
-    this.reqUnits.forEach( ( u ) => {
+    this.reqUnits.forEach( u => {
       const unit = u;
+
       unit.categories = [];
-      categoryIds.forEach( ( catId ) => {
+      categoryIds.forEach( catId => {
         unit.categories.push( { id: catId, name: '' } );
       } );
     } );
+
     return this.reqUnits;
   }
 
@@ -148,6 +155,7 @@ class AbstractModel {
       this.body = req.esDoc;
       this.esAssets = this.getAssets( this.body );
     }
+
     return this.esAssets;
   }
 
@@ -155,6 +163,7 @@ class AbstractModel {
     if ( !this.esAssets ) return true;
 
     const esAsset = this.esAssets.find( ass => ass.md5 === md5 );
+
     if ( !esAsset ) return true;
 
     this.putAsset( {
@@ -162,7 +171,7 @@ class AbstractModel {
       downloadUrl: esAsset.downloadUrl,
       stream: esAsset.stream || null,
       size: esAsset.size || asset.size || null,
-      md5: esAsset.md5
+      md5: esAsset.md5,
     } );
 
     return false;
@@ -170,10 +179,11 @@ class AbstractModel {
 
   getFilesToRemove() {
     const filesToRemove = [];
+
     if ( !this.esAssets ) return filesToRemove;
 
     this.reqAssets = this.getAssets( this.body );
-    this.esAssets.forEach( ( ass ) => {
+    this.esAssets.forEach( ass => {
       if ( !this.reqAssets.find( val => val.md5 === ass.md5 ) ) {
         if ( ass.downloadUrl || ass.stream ) {
           filesToRemove.push( { url: ass.downloadUrl, stream: ass.stream } );
@@ -186,18 +196,21 @@ class AbstractModel {
 
   async indexDocument( doc ) {
     const body = doc;
+
     delete body._id;
     console.log( 'indexing...', JSON.stringify( body, null, 2 ) );
     const result = await this.client.index( {
       index: this.index,
       type: this.type,
-      body
+      body,
     } );
+
     return result;
   }
 
   async updateDocument( id, doc ) {
     const body = doc;
+
     delete body._id;
     console.log( 'updating...', JSON.stringify( body, null, 2 ) );
     const result = await this.client.update( {
@@ -205,9 +218,10 @@ class AbstractModel {
       type: this.type,
       id,
       body: {
-        doc: body
-      }
+        doc: body,
+      },
     } );
+
     return result;
   }
 
@@ -219,8 +233,9 @@ class AbstractModel {
     const result = await this.client.delete( {
       index: this.index,
       type: this.type,
-      id
+      id,
     } );
+
     return result;
   }
 
@@ -228,8 +243,9 @@ class AbstractModel {
     const result = await this.client.get( {
       index: this.index,
       type: this.type,
-      id
+      id,
     } );
+
     return result;
   }
 
@@ -238,9 +254,10 @@ class AbstractModel {
       .search( {
         index: this.index,
         type: this.type,
-        q: `site:${query.site} AND post_id:${query.post_id}`
+        q: `site:${query.site} AND post_id:${query.post_id}`,
       } )
       .catch( err => err );
+
     return result;
   }
 
@@ -259,7 +276,7 @@ class AbstractModel {
         index: this.index,
         type: this.type,
         sort,
-        size
+        size,
       } )
       .catch( err => err );
 
@@ -276,9 +293,10 @@ class AbstractModel {
             type: this.type,
             size,
             sort,
-            from: count
+            from: count,
           } )
           .catch( err => err );
+
         if ( next.hits.hits.length > 0 ) {
           count += next.hits.hits.length;
           result.hits.hits = result.hits.hits.concat( next.hits.hits );
@@ -287,8 +305,10 @@ class AbstractModel {
           }
         }
       };
+
       await collectHits();
     }
+
     return result;
   }
 

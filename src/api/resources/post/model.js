@@ -13,9 +13,10 @@ class Post extends AbstractModel {
   static validateSchema( body, useDefaults = true ) {
     Post.compileSchema( useDefaults );
     const valid = Post.validate( body );
+
     return {
       valid,
-      errors: Post.validate.errors
+      errors: Post.validate.errors,
     };
   }
 
@@ -25,6 +26,7 @@ class Post extends AbstractModel {
     // 'removeAdditional' removes any properties during validation that are not in the schema
     // 'coerceTypes' will coerce to appropriate type.  using to coerce string number to number
     const ajv = new Ajv( { useDefaults, removeAdditional: 'all', coerceTypes: true } );
+
     Post.validate = ajv.compile( postSchema );
   }
 
@@ -36,10 +38,11 @@ class Post extends AbstractModel {
   // eslint-disable-next-line class-methods-use-this
   getAssets( json ) {
     const assets = [];
+
     if ( json.thumbnail && json.thumbnail.sizes ) {
       [
-        'small', 'medium', 'large', 'full'
-      ].forEach( ( size ) => {
+        'small', 'medium', 'large', 'full',
+      ].forEach( size => {
         if ( json.thumbnail.sizes[size] ) {
           assets.push( {
             downloadUrl: json.thumbnail.sizes[size].url,
@@ -49,11 +52,12 @@ class Post extends AbstractModel {
             orientation: json.thumbnail.sizes[size].orientation,
             unitIndex: size,
             srcIndex: -1,
-            assetType: 'thumbnail'
+            assetType: 'thumbnail',
           } );
         }
       } );
     }
+
     return assets;
   }
 
@@ -69,6 +73,7 @@ class Post extends AbstractModel {
   putAsset( asset ) {
     if ( asset.assetType === 'thumbnail' ) {
       const source = this.body.thumbnail.sizes[asset.unitIndex];
+
       source.url = asset.downloadUrl;
       source.width = asset.width;
       source.height = asset.height;

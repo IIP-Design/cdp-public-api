@@ -5,11 +5,11 @@ const schema = {
     locale: { type: 'string' },
     text_direction: {
       type: 'string',
-      default: 'ltr'
+      'default': 'ltr',
     },
     display_name: { type: 'string' },
-    native_name: { type: 'string' }
-  }
+    native_name: { type: 'string' },
+  },
 };
 
 export default schema;

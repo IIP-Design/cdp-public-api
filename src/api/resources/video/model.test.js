@@ -4,7 +4,7 @@ import VideoModel from './model';
 const model = new VideoModel();
 
 // eslint-disable-next-line no-unused-vars
-const con = ( obj ) => {
+const con = obj => {
   console.log( JSON.stringify( obj, null, 2 ) );
 };
 
@@ -13,17 +13,19 @@ describe.only( 'Models', () => {
     describe( 'validateSchema(json)', () => {
       it( 'should throw error if missing site', () => {
         const json = {
-          post_id: 1
+          post_id: 1,
         };
         const result = VideoModel.validateSchema( json );
+
         expect( result.valid ).to.be.false;
       } );
 
       it( 'should throw error if missing post_id', () => {
         const json = {
-          site: 'america.gov'
+          site: 'america.gov',
         };
         const result = VideoModel.validateSchema( json );
+
         expect( result.valid ).to.be.false;
       } );
 
@@ -42,7 +44,7 @@ describe.only( 'Models', () => {
           modified: '2018-01-03T13:38:57+00:00', // string
           owner: 'Scott Gustas', // string
           author: 'Scott Gustas', // string
-          duration: 60 // number
+          duration: 60, // number
         };
         const check = {
           site: 'america.gov',
@@ -53,9 +55,10 @@ describe.only( 'Models', () => {
           owner: 'Scott Gustas',
           author: 'Scott Gustas',
           duration: 60,
-          unit: []
+          unit: [],
         };
         const result = VideoModel.validateSchema( json );
+
         expect( result.valid ).to.be.true;
         expect( json ).to.deep.equals( check );
       } );
@@ -66,15 +69,16 @@ describe.only( 'Models', () => {
           post_id: 1,
           type: 'video',
           unit: '',
-          source: 'stuff in here but will be removed'
+          source: 'stuff in here but will be removed',
         };
         const check = {
           site: 'america.gov',
           post_id: 1,
           type: 'video',
-          unit: []
+          unit: [],
         };
         const result = VideoModel.validateSchema( json );
+
         expect( result.valid ).to.be.true;
         expect( json ).to.deep.equals( check );
       } );
@@ -87,19 +91,19 @@ describe.only( 'Models', () => {
           unit: [
             {
               categories: [
-                'cat', 'cat2', 'cat3'
+                'cat', 'cat2', 'cat3',
               ],
               tags: ['tag1', 'tag2'],
-              source: []
+              source: [],
             },
             {
               categories: [
-                'cat', 'cat1', 'cat3', 'cat4'
+                'cat', 'cat1', 'cat3', 'cat4',
               ],
               tags: ['tag1', 'tag2'],
-              source: []
-            }
-          ]
+              source: [],
+            },
+          ],
         };
         const check = {
           site: 'america.gov',
@@ -108,22 +112,24 @@ describe.only( 'Models', () => {
           unit: [
             {
               categories: [
-                'cat', 'cat2', 'cat3'
+                'cat', 'cat2', 'cat3',
               ],
               tags: ['tag1', 'tag2'],
-              source: []
+              source: [],
             },
             {
               categories: [
-                'cat', 'cat1', 'cat3', 'cat4'
+                'cat', 'cat1', 'cat3', 'cat4',
               ],
               tags: ['tag1', 'tag2'],
-              source: []
-            }
-          ]
+              source: [],
+            },
+          ],
         };
+
         con( json );
         const result = VideoModel.validateSchema( json );
+
         con( json );
         expect( result.valid ).to.be.true;
         expect( json ).to.deep.equals( check );
@@ -136,12 +142,12 @@ describe.only( 'Models', () => {
           type: 'video',
           unit: [
             {
-              title: 'English Title 1'
+              title: 'English Title 1',
             },
             {
-              title: 'English Title 2'
-            }
-          ]
+              title: 'English Title 2',
+            },
+          ],
         };
         const check = {
           site: 'america.gov',
@@ -150,16 +156,18 @@ describe.only( 'Models', () => {
           unit: [
             {
               title: 'English Title 1',
-              source: []
+              source: [],
             },
             {
               title: 'English Title 2',
-              source: []
-            }
-          ]
+              source: [],
+            },
+          ],
         };
+
         con( json );
         const result = VideoModel.validateSchema( json );
+
         con( json );
         expect( result.valid ).to.be.true;
         expect( json ).to.deep.equals( check );
@@ -178,7 +186,7 @@ describe.only( 'Models', () => {
                 text_direction: false,
                 display_name: 'English',
                 native_name: 'English',
-                different_language: true
+                different_language: true,
               },
               title: 'English Title 1',
               desc: 'English Desc 1',
@@ -187,18 +195,18 @@ describe.only( 'Models', () => {
                 srcUrl:
                   'http://ylai.edit.america.dev/wp-content/uploads/sites/2/2016/06/P_010313_Planning_for_Success_English_LR.pdf',
                 md5: '1a79a4d60de6718e8e5b326e338ae533',
-                text: 'transcript goes here'
+                text: 'transcript goes here',
               },
               srt: {
                 srcUrl:
                   'http://ylai.edit.america.dev/wp-content/uploads/sites/2/2017/12/YALI_hero_wash_2x1-1.srt',
                 md5: '1a79a4d60de6718e8e5b326e338ae533',
-                deleteme: 'I should not be here'
+                deleteme: 'I should not be here',
               },
               removeme: 'I should not be here',
               categories: ['cat'],
               tags: ['tag1', 'tag2'],
-              source: 'i should be an array'
+              source: 'i should be an array',
             },
             {
               language: {
@@ -207,7 +215,7 @@ describe.only( 'Models', () => {
                 text_direction: false,
                 display_name: 'English',
                 native_name: 'English',
-                different_language: true
+                different_language: true,
               },
               title: 'English Title 2',
               desc: 'English Desc 2',
@@ -216,20 +224,20 @@ describe.only( 'Models', () => {
                 srcUrl:
                   'http://ylai.edit.america.dev/wp-content/uploads/sites/2/2016/06/P_010313_Planning_for_Success_English_LR.pdf',
                 md5: '1a79a4d60de6718e8e5b326e338ae533',
-                text: 'transcript goes here'
+                text: 'transcript goes here',
               },
               srt: {
                 srcUrl:
                   'http://ylai.edit.america.dev/wp-content/uploads/sites/2/2017/12/YALI_hero_wash_2x1-1.srt',
                 md5: '1a79a4d60de6718e8e5b326e338ae533',
-                deleteme: 'I should not be here'
+                deleteme: 'I should not be here',
               },
               removemetoo: 'I should not be here either',
               categories: ['cat'],
               tags: ['tag1', 'tag2'],
-              source: []
-            }
-          ]
+              source: [],
+            },
+          ],
         };
         const check = {
           site: 'america.gov',
@@ -243,7 +251,7 @@ describe.only( 'Models', () => {
                 text_direction: false,
                 display_name: 'English',
                 native_name: 'English',
-                different_language: true
+                different_language: true,
               },
               title: 'English Title 1',
               desc: 'English Desc 1',
@@ -251,16 +259,16 @@ describe.only( 'Models', () => {
                 srcUrl:
                   'http://ylai.edit.america.dev/wp-content/uploads/sites/2/2016/06/P_010313_Planning_for_Success_English_LR.pdf',
                 md5: '1a79a4d60de6718e8e5b326e338ae533',
-                text: 'transcript goes here'
+                text: 'transcript goes here',
               },
               srt: {
                 srcUrl:
                   'http://ylai.edit.america.dev/wp-content/uploads/sites/2/2017/12/YALI_hero_wash_2x1-1.srt',
-                md5: '1a79a4d60de6718e8e5b326e338ae533'
+                md5: '1a79a4d60de6718e8e5b326e338ae533',
               },
               categories: ['cat'],
               tags: ['tag1', 'tag2'],
-              source: []
+              source: [],
             },
             {
               language: {
@@ -269,7 +277,7 @@ describe.only( 'Models', () => {
                 text_direction: false,
                 display_name: 'English',
                 native_name: 'English',
-                different_language: true
+                different_language: true,
               },
               title: 'English Title 2',
               desc: 'English Desc 2',
@@ -277,20 +285,21 @@ describe.only( 'Models', () => {
                 srcUrl:
                   'http://ylai.edit.america.dev/wp-content/uploads/sites/2/2016/06/P_010313_Planning_for_Success_English_LR.pdf',
                 md5: '1a79a4d60de6718e8e5b326e338ae533',
-                text: 'transcript goes here'
+                text: 'transcript goes here',
               },
               srt: {
                 srcUrl:
                   'http://ylai.edit.america.dev/wp-content/uploads/sites/2/2017/12/YALI_hero_wash_2x1-1.srt',
-                md5: '1a79a4d60de6718e8e5b326e338ae533'
+                md5: '1a79a4d60de6718e8e5b326e338ae533',
               },
               categories: ['cat'],
               tags: ['tag1', 'tag2'],
-              source: []
-            }
-          ]
+              source: [],
+            },
+          ],
         };
         const result = VideoModel.validateSchema( json );
+
         expect( result.valid ).to.be.true;
         expect( json ).to.deep.equals( check );
       } );
@@ -317,8 +326,8 @@ describe.only( 'Models', () => {
                     width: 640,
                     height: 360,
                     filesize: 173929,
-                    bitrate: 4727234.123412
-                  }
+                    bitrate: 4727234.123412,
+                  },
                 },
                 {
                   burnedInCaptions: 'yes',
@@ -333,10 +342,10 @@ describe.only( 'Models', () => {
                     height: 360,
                     filesize: 173929,
                     bitrate: 4727234.123412,
-                    asdfasdf: 'I should not be here'
-                  }
-                }
-              ]
+                    asdfasdf: 'I should not be here',
+                  },
+                },
+              ],
             },
             {
               title: 'English Title 2',
@@ -354,8 +363,8 @@ describe.only( 'Models', () => {
                     width: 640,
                     height: 360,
                     filesize: 173929,
-                    bitrate: 4727234.123412
-                  }
+                    bitrate: 4727234.123412,
+                  },
                 },
                 {
                   burnedInCaptions: 'yes',
@@ -370,12 +379,12 @@ describe.only( 'Models', () => {
                     height: 360,
                     filesize: 173929,
                     bitrate: 4727234.123412,
-                    asdfasdf: 'I should not be here'
-                  }
-                }
-              ]
-            }
-          ]
+                    asdfasdf: 'I should not be here',
+                  },
+                },
+              ],
+            },
+          ],
         };
         const check = {
           site: 'america.gov',
@@ -396,8 +405,8 @@ describe.only( 'Models', () => {
                     width: 640,
                     height: 360,
                     filesize: 173929,
-                    bitrate: 4727234.123412
-                  }
+                    bitrate: 4727234.123412,
+                  },
                 },
                 {
                   burnedInCaptions: 'yes',
@@ -410,10 +419,10 @@ describe.only( 'Models', () => {
                     width: 640,
                     height: 360,
                     filesize: 173929,
-                    bitrate: 4727234.123412
-                  }
-                }
-              ]
+                    bitrate: 4727234.123412,
+                  },
+                },
+              ],
             },
             {
               title: 'English Title 2',
@@ -429,8 +438,8 @@ describe.only( 'Models', () => {
                     width: 640,
                     height: 360,
                     filesize: 173929,
-                    bitrate: 4727234.123412
-                  }
+                    bitrate: 4727234.123412,
+                  },
                 },
                 {
                   burnedInCaptions: 'yes',
@@ -443,14 +452,15 @@ describe.only( 'Models', () => {
                     width: 640,
                     height: 360,
                     filesize: 173929,
-                    bitrate: 4727234.123412
-                  }
-                }
-              ]
-            }
-          ]
+                    bitrate: 4727234.123412,
+                  },
+                },
+              ],
+            },
+          ],
         };
         const result = VideoModel.validateSchema( json );
+
         expect( result.valid ).to.be.true;
         expect( json ).to.deep.equals( check );
       } );

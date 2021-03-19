@@ -18,34 +18,34 @@ const schema = {
       properties: {
         rawText: { type: 'string' },
         html: { type: 'string' },
-        markdown: { type: 'string' }
-      }
+        markdown: { type: 'string' },
+      },
     },
     excerpt: { type: 'string' },
     url: { type: 'string' },
     use: { type: 'string' },
     bureaus: {
       type: 'array',
-      default: [],
+      'default': [],
       items: {
         type: 'object',
         properties: {
           id: { type: 'string' },
           name: { type: 'string' },
-          abbr: { type: 'string' }
-        }
-      }
+          abbr: { type: 'string' },
+        },
+      },
     },
     categories: {
       type: 'array',
-      items: { type: 'string' }
+      items: { type: 'string' },
     },
     tags: {
       type: 'array',
-      items: { type: 'string' }
-    }
+      items: { type: 'string' },
+    },
   },
-  required: ['id', 'site']
+  required: ['id', 'site'],
 };
 
 export default schema;

@@ -4,14 +4,15 @@
  */
 
 import controllers from '../elastic/controller';
-import * as utils from '../utils/index';
+import * as utils from '../utils';
 
 // POST v1/[resource]
 export const indexDocument = model => ( req, res, next ) => {
   console.log( 'INDEX DOCUMENT', req.requestId );
+
   return controllers
     .indexDocument( model, req )
-    .then( ( doc ) => {
+    .then( doc => {
       req.esDoc = doc;
       if ( !utils.callback( req, { doc } ) && !res.headersSent ) res.status( 201 ).json( doc );
       next();
@@ -22,7 +23,7 @@ export const indexDocument = model => ( req, res, next ) => {
 // PUT v1/[resource]/:uuid
 export const updateDocumentById = model => async ( req, res, next ) => controllers
   .updateDocumentById( model, req )
-  .then( ( doc ) => {
+  .then( doc => {
     if ( req.esDoc ) req.esDoc = { ...req.esDoc, ...doc };
     else req.esDoc = doc;
     if ( !utils.callback( req, { doc: req.esDoc } ) && !res.headersSent ) {
@@ -49,20 +50,23 @@ export const getDocumentById = () => ( req, res, next ) => {
 
 export const setRequestDoc = model => ( req, res, next, uuid ) => {
   const query = utils.getQueryFromUuid( uuid );
+
   req.queryArgs = query;
+
   return controllers
     .findDocument( model, query )
-    .then( ( doc ) => {
+    .then( doc => {
       if ( doc ) req.esDoc = doc;
       next();
     } )
-    .catch( ( error ) => {
+    .catch( error => {
       next( error );
     } );
 };
 
 export const setRequestDocWithRetry = model => async ( req, res, next ) => {
   const query = utils.getQueryFromUuid( req.params.uuid );
+
   req.queryArgs = query;
   let attempts = 0;
   const findDoc = () => {
@@ -70,10 +74,11 @@ export const setRequestDocWithRetry = model => async ( req, res, next ) => {
     console.log( `attempting to find document ${req.params.uuid} attempt: `, attempts );
     controllers
       .findDocument( model, utils.getQueryFromUuid( req.params.uuid ) )
-      .then( ( doc ) => {
+      .then( doc => {
         if ( doc ) {
           console.log( `Found document for ${req.params.uuid}, passing along...` );
           req.esDoc = doc;
+
           return next();
         }
         if ( attempts < 6 ) {
@@ -83,6 +88,7 @@ export const setRequestDocWithRetry = model => async ( req, res, next ) => {
       } )
       .catch( error => next( error ) );
   };
+
   await findDoc();
 };
 
@@ -92,7 +98,7 @@ export const generateControllers = ( model, overrides = {} ) => {
     updateDocumentById: updateDocumentById( model ),
     deleteDocumentById: deleteDocumentById( model ),
     getDocumentById: getDocumentById( model ),
-    setRequestDoc: setRequestDoc( model )
+    setRequestDoc: setRequestDoc( model ),
   };
 
   return { ...defaults, ...overrides };

@@ -8,7 +8,7 @@ module.exports = {
 
   output: {
     path: path.join( __dirname, 'build' ),
-    filename: 'server.js'
+    filename: 'server.js',
   },
 
   module: {
@@ -16,10 +16,10 @@ module.exports = {
       {
         test: /\.js?$/,
         use: ['babel-loader'],
-        exclude: [/node_modules/, /workers/]
-      }
-    ]
+        exclude: [/node_modules/, /workers/],
+      },
+    ],
   },
 
-  externals: [webpackNodeExternals()]
+  externals: [webpackNodeExternals()],
 };

@@ -15,8 +15,8 @@ const postSchema = {
       type: 'object',
       properties: {
         id: { type: 'integer' },
-        name: { type: 'string' }
-      }
+        name: { type: 'string' },
+      },
     },
     link: { type: 'string' },
     title: { type: 'string' },
@@ -27,44 +27,44 @@ const postSchema = {
     language: languageSchema,
     languages: {
       type: 'array',
-      default: [],
+      'default': [],
       items: {
         type: 'object',
         properties: {
           post_id: { type: 'integer' },
-          language: languageSchema
-        }
-      }
+          language: languageSchema,
+        },
+      },
     },
     tags: {
       type: 'array',
-      default: [],
-      items: { type: 'string' }
+      'default': [],
+      items: { type: 'string' },
     },
     categories: {
       type: 'array',
-      default: [],
-      items: { type: 'string' }
+      'default': [],
+      items: { type: 'string' },
     },
     site_taxonomies: {
       type: 'object',
-      default: {},
+      'default': {},
       patternProperties: {
         '.*': {
           type: 'array',
-          default: [],
+          'default': [],
           items: {
             type: 'object',
             properties: {
               id: { type: 'integer' },
-              name: { type: 'string' }
+              name: { type: 'string' },
             },
-            required: ['name']
-          }
-        }
-      }
-    }
-  }
+            required: ['name'],
+          },
+        },
+      },
+    },
+  },
 };
 
 export default postSchema;

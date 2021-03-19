@@ -7,14 +7,17 @@ import vimeo from '../services/vimeo';
 
 const downloadAsset = async ( url, requestId ) => {
   const download = await Download( url, requestId );
+
   return download;
 };
 
 const uploadAsset = async ( reqBody, download ) => {
   let d = null;
+
   if ( reqBody.published ) d = new Date( reqBody.published );
   else d = new Date(); // use current date as fallback
   let month = d.getMonth() + 1; // month is a 0 based index
+
   if ( month < 10 ) month = `0${month}`; // leading 0
   const title = `${d.getFullYear()}/${month}/${reqBody.site}_${reqBody.post_id}/${
     download.props.md5
@@ -22,18 +25,21 @@ const uploadAsset = async ( reqBody, download ) => {
   const result = await aws.upload( {
     title,
     ext: download.props.ext,
-    filePath: download.filePath
+    filePath: download.filePath,
   } );
+
   return result;
 };
 
 const uploadVimeo = async ( download, token, props = {} ) => {
   const result = await vimeo.upload( download.filePath, token, props );
+
   return result;
 };
 
-const uploadCloudflare = async ( download ) => {
+const uploadCloudflare = async download => {
   const result = await cloudflare.upload( download.filePath );
+
   return result;
 };
 
@@ -50,15 +56,16 @@ const uploadCloudflareAsync = ( download, asset ) => {
     'uploadCloudflareAsync download and asset',
     '\r\n',
     JSON.stringify( download, null, 2 ),
-    JSON.stringify( asset, null, 2 )
+    JSON.stringify( asset, null, 2 ),
   );
-  return new Promise( ( resolve ) => {
+
+  return new Promise( resolve => {
     cloudflare
       .upload( download.filePath )
-      .then( ( result ) => {
+      .then( result => {
         resolve( { asset, ...result } );
       } )
-      .catch( ( err ) => {
+      .catch( err => {
         console.error( 'uploadStreamSync error', err );
         resolve( null );
       } );
@@ -71,18 +78,21 @@ const getVideoProperties = download => new Promise( ( resolve, reject ) => {
       width: null,
       height: null,
       filesize: null,
-      bitrate: null
+      bitrate: null,
     },
-    duration: null
+    duration: null,
   };
+
   exec( `ffprobe -i "${download.filePath}" -hide_banner -show_format -show_streams -v error -print_format json`, ( error, stdout ) => {
     if ( error ) {
       return reject( new Error( 'Video properties could not be obtained' ) );
     }
     const meta = JSON.parse( stdout );
+
     if ( meta.streams && meta.streams.length > 0 ) {
       for ( let i = 0; i < meta.streams.length; i + 1 ) {
         const stream = meta.streams[i];
+
         if ( stream.codec_type === 'video' ) {
           props.size.width = stream.width;
           props.size.height = stream.height;
@@ -95,6 +105,7 @@ const getVideoProperties = download => new Promise( ( resolve, reject ) => {
         props.duration = meta.format.duration;
       }
     }
+
     return resolve( props );
   } );
 } );
@@ -108,26 +119,26 @@ const updateAsset = ( model, asset, result, md5 ) => {
     stream: result.stream || null,
     size: result.size || null,
     duration: result.duration || null,
-    md5
+    md5,
   } );
 };
 
 const deleteAssets = ( assets, req ) => {
   if ( !assets || assets.length < 1 ) return;
-  assets.forEach( ( asset ) => {
+  assets.forEach( asset => {
     if ( asset.url ) aws.remove( asset );
     if (
-      asset.stream &&
-      asset.stream.uid &&
-      ( !asset.stream.site || asset.stream.site === 'cloudflare' )
+      asset.stream
+      && asset.stream.uid
+      && ( !asset.stream.site || asset.stream.site === 'cloudflare' )
     ) {
       cloudflare.remove( asset.stream.uid );
     }
     if (
-      req.headers.vimeo_token &&
-      asset.stream &&
-      asset.stream.uid &&
-      asset.stream.site === 'vimeo'
+      req.headers.vimeo_token
+      && asset.stream
+      && asset.stream.uid
+      && asset.stream.site === 'vimeo'
     ) {
       vimeo.remove( asset.stream.uid, req.headers.vimeo_token );
     }
@@ -142,10 +153,12 @@ const deleteAssets = ( assets, req ) => {
  * @param url
  * @returns {Promise<boolean>}
  */
-const isTypeAllowed = async ( url ) => {
+const isTypeAllowed = async url => {
   const contentType = await utils.getTypeFromUrl( url );
+
   if ( !contentType ) return false;
   const allowedTypes = utils.getContentTypes();
+
   return allowedTypes.includes( contentType );
 };
 
@@ -166,9 +179,11 @@ const transferAsset = ( model, asset, req ) => {
     return new Promise( async ( resolve, reject ) => {
       let download = null;
       let updateNeeded = false;
+
       console.info( 'downloading', asset.downloadUrl );
 
       const allowed = await isTypeAllowed( asset.downloadUrl );
+
       if ( allowed && asset.md5 ) {
         // Since we have an md5 in the request, check to see if is already present
         // in the ES model assets and if so, no update needed.
@@ -177,8 +192,9 @@ const transferAsset = ( model, asset, req ) => {
       }
       if ( allowed ) {
         // eslint-disable-next-line max-len
-        download = await downloadAsset( asset.downloadUrl, model.getRequestId() ).catch( ( err ) => {
+        download = await downloadAsset( asset.downloadUrl, model.getRequestId() ).catch( err => {
           console.error( err );
+
           return err;
         } );
         if ( download instanceof Error ) return resolve( download );
@@ -193,6 +209,7 @@ const transferAsset = ( model, asset, req ) => {
       } else {
         console.log( 'Update required for download hash: ', download.props.md5 );
         const uploads = [];
+
         uploads.push( uploadAsset( model.body, download ) );
         if ( download.props.contentType.startsWith( 'video' ) ) {
           // Check for Vimeo token to use for Vimeo upload
@@ -200,25 +217,28 @@ const transferAsset = ( model, asset, req ) => {
             const unit = model.getUnit( asset.unitIndex );
             const props = {
               name: unit.title || null,
-              description: unit.desc || null
+              description: unit.desc || null,
             };
+
             uploads.push( uploadVimeo( download, req.headers.vimeo_token, props ) );
           }
           // Check size for Cloudflare upload
-          const size = await getVideoProperties( download ).catch( ( err ) => {
+          const size = await getVideoProperties( download ).catch( err => {
             uploads.push( Promise.resolve( err ) );
           } );
+
           if ( size ) {
             // Do not upload to Cloudflare if we uploaded to Vimeo
             if ( !req.headers.vimeo_token ) {
               const maxSize = ( process.env.CF_MAX_SIZE || 1024 ) * 1024 * 1024;
               const fileSize = size.size.filesize;
+
               if ( fileSize < maxSize ) {
                 // Test the env variable for true or if not set, assume true
-                if ( /^true/.test( process.env.CF_STREAM_ASYNC || 'true' ) ) {
+                if ( (/^true/).test( process.env.CF_STREAM_ASYNC || 'true' ) ) {
                   model.putAsyncTransfer( uploadCloudflareAsync( download, {
                     ...asset,
-                    md5: download.props.md5
+                    md5: download.props.md5,
                   } ) ); // eslint-disable-line max-len
                 } else uploads.push( uploadCloudflare( download ) );
               } else {
@@ -230,10 +250,11 @@ const transferAsset = ( model, asset, req ) => {
         }
 
         Promise.all( uploads )
-          .then( ( results ) => {
+          .then( results => {
             let hasError = null;
             let result = {};
-            results.forEach( ( data ) => {
+
+            results.forEach( data => {
               if ( !hasError ) {
                 if ( data instanceof Error ) hasError = data;
                 else if ( data ) result = { ...result, ...data };
@@ -246,8 +267,9 @@ const transferAsset = ( model, asset, req ) => {
               resolve( hasError );
             }
           } )
-          .catch( ( err ) => {
+          .catch( err => {
             console.error( err );
+
             return reject( err );
           } );
       }
@@ -277,19 +299,21 @@ export const transferCtrl = Model => async ( req, res, next ) => {
     return next( err );
   }
 
-  reqAssets.forEach( ( asset ) => {
+  reqAssets.forEach( asset => {
     transfers.push( transferAsset( model, asset, req ) );
   } );
 
   // Once all promises resolve, pass request onto ES controller
   await Promise.all( transfers )
-    .then( ( results ) => {
+    .then( results => {
       let hasError = null;
-      results.forEach( ( result ) => {
+
+      results.forEach( result => {
         if ( !hasError && result instanceof Error ) hasError = result;
       } );
       if ( !hasError ) {
         const s3FilesToDelete = model.getFilesToRemove();
+
         if ( s3FilesToDelete.length ) deleteAssets( s3FilesToDelete, req );
         console.log( 'TRANSFER CTRL NEXT', req.requestId );
         next();
@@ -298,7 +322,7 @@ export const transferCtrl = Model => async ( req, res, next ) => {
         next( hasError );
       }
     } )
-    .catch( ( err ) => {
+    .catch( err => {
       console.log( `TRANSFER CTRL all error [${model.getTitle()}]`, err );
       next( err );
     } );
@@ -321,14 +345,15 @@ export const asyncTransferCtrl = Model => async ( req, res, next ) => {
   let updated = false;
   const model = new Model();
 
-  await Promise.all( req.asyncTransfers ).then( async ( results ) => {
+  await Promise.all( req.asyncTransfers ).then( async results => {
     try {
       await model.prepareDocumentForPatch( req );
     } catch ( err ) {
       console.error( err );
+
       return null;
     }
-    results.forEach( ( result ) => {
+    results.forEach( result => {
       if ( result ) {
         // Let's nullify unitIndex and srcIndex so that putAsset has to rely on md5
         // in case this document changed.
@@ -337,7 +362,7 @@ export const asyncTransferCtrl = Model => async ( req, res, next ) => {
           ...result.asset,
           stream: result.stream,
           unitIndex: null,
-          srcIndex: null
+          srcIndex: null,
         } );
         updated = true;
       }

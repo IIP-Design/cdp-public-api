@@ -7,7 +7,7 @@ import { validate } from '../../../middleware/validateSchema';
 import {
   translateCategories,
   tagCategories,
-  synonymCategories
+  synonymCategories,
 } from '../../../middleware/categories';
 
 const router = new Router();
@@ -24,7 +24,7 @@ router
     tagCategories,
     synonymCategories,
     translateCategories( CourseModel ),
-    controller.indexDocument
+    controller.indexDocument,
   );
 
 // Route: /v1/course/[uuid]
@@ -37,7 +37,7 @@ router
     tagCategories,
     synonymCategories,
     translateCategories( CourseModel ),
-    controller.updateDocumentById
+    controller.updateDocumentById,
   )
   .get( controller.getDocumentById )
   .delete( deleteCtrl( CourseModel ), controller.deleteDocumentById );

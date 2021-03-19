@@ -18,12 +18,14 @@ class Taxonomy extends AbstractModel {
   constructTree( terms, root = null ) {
     const tree = [];
     let ret = tree;
+
     if ( !terms || terms instanceof Array !== true ) return ret;
     terms.sort( ( a, b ) => a.language.en.localeCompare( b.language.en ) );
-    terms.forEach( ( term ) => {
+    terms.forEach( term => {
       // eslint doesn't allow us to add the children property directly
       // so we have to use a temp variable
       const temp = term;
+
       temp.children = [];
       if ( root ) {
         if ( root === term._id ) ret = term;
@@ -31,10 +33,12 @@ class Taxonomy extends AbstractModel {
     } );
     terms
       .filter( term => !term.primary )
-      .forEach( ( term ) => {
+      .forEach( term => {
         const found = terms.find( val => term.parents.includes( val._id ) );
+
         if ( found ) found.children.push( term );
       } );
+
     return ret;
   }
 
@@ -55,12 +59,13 @@ class Taxonomy extends AbstractModel {
         body: {
           query: {
             term: {
-              [`language.${locale}.keyword`]: name.toLowerCase()
-            }
-          }
-        }
+              [`language.${locale}.keyword`]: name.toLowerCase(),
+            },
+          },
+        },
       } )
       .catch( err => err );
+
     return result;
   }
 
@@ -80,13 +85,14 @@ class Taxonomy extends AbstractModel {
           query: {
             match: {
               synonymMapping: {
-                query: name
-              }
-            }
-          }
-        }
+                query: name,
+              },
+            },
+          },
+        },
       } )
       .catch( err => err );
+
     return result;
   }
 
@@ -106,18 +112,21 @@ class Taxonomy extends AbstractModel {
           query: {
             multi_match: {
               query: name,
-              fields: ['synonymMapping', 'language.en']
-            }
-          }
-        }
+              fields: ['synonymMapping', 'language.en'],
+            },
+          },
+        },
       } )
       .catch( err => err );
+
     return result;
   }
 
   async translateTermById( id, locale = 'en' ) {
     const result = await this.findDocumentById( id ).then( parser.parseGetResult( id ) );
+
     if ( result.language[locale] ) return result.language[locale];
+
     return result.language.en;
   }
 }

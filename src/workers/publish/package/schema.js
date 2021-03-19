@@ -17,13 +17,13 @@ const schema = {
     language: languageSchema,
     documents: {
       type: 'array',
-      default: [],
+      'default': [],
       items: {
-        documentSchema
-      }
-    }
+        documentSchema,
+      },
+    },
   },
-  required: ['id', 'site']
+  required: ['id', 'site'],
 };
 
 export default schema;

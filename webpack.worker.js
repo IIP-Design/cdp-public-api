@@ -8,17 +8,17 @@ module.exports = {
 
   output: {
     path: path.join( __dirname, 'build' ),
-    filename: 'consumer.js'
+    filename: 'consumer.js',
   },
 
   module: {
     rules: [
       {
         test: /\.js?$/,
-        use: ['babel-loader']
-      }
-    ]
+        use: ['babel-loader'],
+      },
+    ],
   },
 
-  externals: [webpackNodeExternals()]
+  externals: [webpackNodeExternals()],
 };

@@ -14,6 +14,7 @@ const baselineValidation = ( object, state ) => {
       const { hasOwnProperty } = Object.prototype;
       const options = !hasOwnProperty.call( state, 'options' );
       const error = !hasOwnProperty.call( state, 'error' );
+
       if ( options && error ) {
         throw new Error( '2nd param object must have options and error key/pair' );
       }
@@ -32,7 +33,7 @@ const baselineValidation = ( object, state ) => {
 export const string = ( object, state ) => {
   const data = baselineValidation( object, state );
 
-  Object.keys( object ).forEach( ( key ) => {
+  Object.keys( object ).forEach( key => {
     const value = object[key];
 
     if ( !value ) {
@@ -45,13 +46,14 @@ export const string = ( object, state ) => {
       data.error[key] = 'Value must be a string';
     }
   } );
+
   return data;
 };
 
 export const array = ( object, state ) => {
   const data = baselineValidation( object, state );
 
-  Object.keys( object ).forEach( ( key ) => {
+  Object.keys( object ).forEach( key => {
     const value = object[key];
 
     if ( !value ) {
@@ -87,7 +89,7 @@ export const array = ( object, state ) => {
 export const stringOrStringArray = ( object, state ) => {
   const data = baselineValidation( object, state );
 
-  Object.keys( object ).forEach( ( key ) => {
+  Object.keys( object ).forEach( key => {
     const value = object[key];
 
     // return quickly if value is undefined
@@ -125,7 +127,7 @@ export const stringOrStringArray = ( object, state ) => {
 export const jsonString = ( object, state ) => {
   const data = baselineValidation( object, state );
 
-  Object.keys( object ).forEach( ( key ) => {
+  Object.keys( object ).forEach( key => {
     const value = object[key];
 
     if ( !value ) {
@@ -135,9 +137,9 @@ export const jsonString = ( object, state ) => {
     try {
       data.options[key] = JSON.parse( value );
     } catch ( e ) {
-      if ( typeof value !== 'object' &&
+      if ( typeof value !== 'object'
         // error if not a proper object
-        Object.prototype.toString.call( value ) !== '[object Object]' ) {
+        && Object.prototype.toString.call( value ) !== '[object Object]' ) {
         data.error[key] = 'Value must be valid JSON string or Object';
       } else {
         data.options[key] = value;
@@ -156,7 +158,7 @@ export const jsonString = ( object, state ) => {
 export const number = ( object, state ) => {
   const data = baselineValidation( object, state );
 
-  Object.keys( object ).forEach( ( key ) => {
+  Object.keys( object ).forEach( key => {
     const value = object[key];
 
     if ( !value ) {
@@ -169,5 +171,6 @@ export const number = ( object, state ) => {
       data.error[key] = 'Value must be a number';
     }
   } );
+
   return data;
 };

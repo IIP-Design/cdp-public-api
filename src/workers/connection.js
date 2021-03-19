@@ -17,19 +17,20 @@ let publishChannel = null;
 
 const connect = async () => amqp.connect( RABBITMQ_CONNECTION );
 
-const handleConnectionEvents = ( connection ) => {
+const handleConnectionEvents = connection => {
   // handle connection closed
   connection.on( 'close', () => console.log( 'Connection has been closed' ) );
   // handle errors
   connection.on( 'error', err => console.log( `Error: Connection error: ${err.toString()}` ) );
 };
 
-const getConnection = async ( type ) => {
+const getConnection = async type => {
   if ( type === 'consumer' ) {
     if ( consumerConnection ) {
       return consumerConnection;
     }
     consumerConnection = connect();
+
     return consumerConnection;
   }
 
@@ -38,6 +39,7 @@ const getConnection = async ( type ) => {
   }
 
   publisherConnection = connect();
+
   return publisherConnection;
 };
 
@@ -47,12 +49,13 @@ export const getPublishChannel = async () => {
   }
 
   const connection = await getConnection( 'publish' ).catch(
-    err => `[getPublishChannel] Unable to connect to RabbitMQ: ${err.toString()}`
+    err => `[getPublishChannel] Unable to connect to RabbitMQ: ${err.toString()}`,
   );
 
   if ( connection ) {
     handleConnectionEvents( connection );
     publishChannel = await connection.createConfirmChannel();
+
     return publishChannel;
   }
 };
@@ -64,12 +67,13 @@ export const getConsumerChannel = async () => {
   }
 
   const connection = await getConnection( 'consumer' ).catch(
-    err => `[getConsumerChannel] Unable to connect to RabbitMQ ${err.toString()}`
+    err => `[getConsumerChannel] Unable to connect to RabbitMQ ${err.toString()}`,
   );
 
   if ( connection ) {
     handleConnectionEvents( connection );
     consumerChannel = await connection.createChannel();
+
     return consumerChannel;
   }
 };
@@ -84,15 +88,15 @@ export const publishToChannel = async ( { routingKey, exchangeName, data } ) => 
       routingKey,
       Buffer.from( JSON.stringify( data ), 'utf-8' ),
       {
-        persistent: true
+        persistent: true,
       },
-      ( err ) => {
+      err => {
         if ( err ) {
           return reject( err );
         }
 
         resolve();
-      }
+      },
     );
   } );
 };

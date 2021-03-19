@@ -9,9 +9,11 @@ export default {
       return this.updateDocument( model, req.body, req.esDoc._id );
     }
     const doc = await this.findDocument( model, req.body );
+
     if ( doc && doc._id ) {
       return this.updateDocument( model, req.body, doc._id );
     }
+
     return model.indexDocument( req.body ).then( parser.parseCreateResult( req.body ) );
   },
 
@@ -24,6 +26,7 @@ export default {
     if ( req.esDoc ) {
       return this.updateDocument( model, req.body, req.esDoc._id );
     }
+
     return this.updateDocument( model, req.body, req.params.id );
   },
 
@@ -38,6 +41,7 @@ export default {
     // could use client.deleteByQuery but that would delete all that match the query
     // prefer to have check for unique value before deleting
     const doc = await this.findDocument( model, req.body );
+
     if ( doc && doc._id ) {
       return this.deleteDocument( model, doc._id );
     }
@@ -63,6 +67,7 @@ export default {
   async findDocument( model, body ) {
     if ( body.site && body.post_id ) {
       const doc = await model.findDocumentByQuery( body ).then( parser.parseUniqueDocExists() );
+
       return doc;
     }
     throw new Error( 'Body must have both site and post_id props' );
@@ -78,5 +83,5 @@ export default {
 
   async translateTermById( model, id, locale ) {
     return model.translateTermById( id, locale );
-  }
+  },
 };

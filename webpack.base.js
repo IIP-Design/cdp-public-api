@@ -6,13 +6,13 @@ module.exports = {
         enforce: 'pre',
         loader: 'eslint-loader',
         exclude: /node_modules/,
-        options: { emitWarning: true }
+        options: { emitWarning: true },
       },
       {
         test: /\.js?$/,
         use: ['babel-loader'],
-        exclude: /node_modules/
-      }
-    ]
-  }
+        exclude: /node_modules/,
+      },
+    ],
+  },
 };

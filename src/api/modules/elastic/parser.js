@@ -9,11 +9,13 @@ export default {
     return result => new Promise( ( resolve, reject ) => {
       if ( result.hits ) {
         const { total } = result.hits;
+
         if ( !total ) {
           return resolve( null );
         }
         if ( total === 1 ) {
           const hit = result.hits.hits[0];
+
           return resolve( { _id: hit._id, ...hit._source } );
         }
         reject( new Error( `Multiple results exist. Results:\r\n${JSON.stringify( result.hits, null, 2 )}` ) );
@@ -27,6 +29,7 @@ export default {
     return result => new Promise( ( resolve, reject ) => {
       if ( result.hits && result.hits.total > 0 ) {
         const hits = result.hits.hits.map( hit => ( { _id: hit._id, ...hit._source } ) );
+
         return resolve( hits );
       }
       reject( new Error( 'Not found.' ) );
@@ -65,15 +68,17 @@ export default {
   },
 
   parseAllResult( result ) {
-    return new Promise( ( resolve ) => {
+    return new Promise( resolve => {
       if ( result.hits && result.hits.total > 0 ) {
         const terms = result.hits.hits.reduce( ( acc, val ) => {
           acc.push( { _id: val._id, ...val._source } );
+
           return acc;
         }, [] );
+
         resolve( terms );
       }
       resolve( {} );
     } );
-  }
+  },
 };

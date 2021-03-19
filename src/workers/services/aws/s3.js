@@ -8,7 +8,7 @@ const PRODUCTION_BUCKET = process.env.AWS_S3_PRODUCTION_BUCKET;
 AWS.config.update( {
   accessKeyId: process.env.AWS_S3_AUTHORING_ACCESS_KEY_ID,
   secretAccessKey: process.env.AWS_S3_AUTHORING_SECRET,
-  region: process.env.AWS_REGION
+  region: process.env.AWS_REGION,
 } );
 
 const s3 = new AWS.S3();
@@ -18,7 +18,7 @@ const s3 = new AWS.S3();
  * Returns file extension of filename
  * @param {string} filename
  */
-export const getFileExt = ( filename ) => {
+export const getFileExt = filename => {
   if ( typeof filename !== 'string' ) return '';
 
   const index = filename.lastIndexOf( '.' );
@@ -30,15 +30,16 @@ export const getFileExt = ( filename ) => {
 export const deleteAllS3Assets = async ( dir, bucket ) => {
   const listParams = {
     Bucket: bucket,
-    Prefix: dir
+    Prefix: dir,
   };
 
   const listedObjects = await s3.listObjectsV2( listParams ).promise();
+
   if ( listedObjects.Contents.length === 0 ) return;
 
   const deleteParams = {
     Bucket: bucket,
-    Delete: { Objects: [] }
+    Delete: { Objects: [] },
   };
 
   listedObjects.Contents.forEach( ( { Key } ) => {
@@ -54,18 +55,18 @@ export const deleteAllS3Assets = async ( dir, bucket ) => {
 export const deleteS3Asset = ( key, bucket ) => {
   const params = {
     Bucket: bucket,
-    Key: key
+    Key: key,
   };
 
   return s3.deleteObject( params ).promise();
 };
 
 // add throwing error here
-export const copyS3Asset = async ( key, fromBucket, toBucket ) => {  
+export const copyS3Asset = async ( key, fromBucket, toBucket ) => {
   const copyParams = {
     Bucket: toBucket,
     CopySource: encodeURIComponent( `/${fromBucket}/${key}` ),
-    Key: key
+    Key: key,
   };
 
   return s3.copyObject( copyParams ).promise();
@@ -74,10 +75,11 @@ export const copyS3Asset = async ( key, fromBucket, toBucket ) => {
 export const copyS3AllAssets = async ( dir, fromBucket, toBucket ) => {
   const listParams = {
     Bucket: fromBucket,
-    Prefix: dir
+    Prefix: dir,
   };
 
   const listedObjects = await s3.listObjectsV2( listParams ).promise();
+
   if ( listedObjects.Contents.length === 0 ) return;
 
   listedObjects.Contents.forEach( ( { Key } ) => {
@@ -94,7 +96,7 @@ export const uploadAsset = ( file, key ) => {
   const params = {
     Bucket: AUTHORING_BUCKET,
     Key: key,
-    Body: fileContent
+    Body: fileContent,
   };
 
   // Upload files to the bucket
@@ -107,9 +109,8 @@ export const getSignedUrl = params => new Promise( ( resolve, reject ) => {
   s3.getSignedUrl( 'getObject', {
     Bucket: bucket === 'prod' ? PRODUCTION_BUCKET : AUTHORING_BUCKET,
     Key: key,
-    Expires: expires || 900 // default 15 minutes
-  },
-  ( err, url ) => {
+    Expires: expires || 900, // default 15 minutes
+  }, ( err, url ) => {
     if ( err ) {
       reject( err );
     } else {
@@ -121,13 +122,14 @@ export const getSignedUrl = params => new Promise( ( resolve, reject ) => {
 export const getS3BucketAssets = async ( bucket, dir, fileTypes ) => {
   const listParams = {
     Bucket: bucket,
-    Prefix: dir
+    Prefix: dir,
   };
 
   const files = [];
   const types = Array.isArray( fileTypes ) && fileTypes.length;
 
   const listedObjects = await s3.listObjectsV2( listParams ).promise();
+
   if ( listedObjects.Contents.length === 0 ) return;
 
   listedObjects.Contents.forEach( ( { Key } ) => {

@@ -13,7 +13,7 @@ const findDocByTerm = model => async ( req, res, next ) => controllers
 
 const translateTermById = model => async ( req, res, next ) => controllers
   .translateTermById( model, req.params.id, req.params.locale )
-  .then( ( name ) => {
+  .then( name => {
     res.json( name );
   } )
   .catch( err => next( err ) );
@@ -28,15 +28,18 @@ const translateTermById = model => async ( req, res, next ) => controllers
  */
 const createLanguage = ( termName, existingTerm = { language: {} }, languageCols = null ) => {
   const existingLanguage = { language: {} };
+
   if ( existingTerm ) existingLanguage.language = existingTerm.language;
   const language = {
     en: termName.toLowerCase(),
     'en-us': termName.toLowerCase(),
-    ...existingLanguage.language
+    ...existingLanguage.language,
   };
-  languageCols.indices.forEach( ( localeIndex ) => {
+
+  languageCols.indices.forEach( localeIndex => {
     language[localeIndex.locale] = languageCols.cols[localeIndex.index] || null;
   } );
+
   return language;
 };
 
@@ -74,6 +77,7 @@ const bulkImport = model => async ( req, res, next ) => {
   const createUpdateTerm = async ( name, syns, language, isParent, existingTerm ) => {
     console.log( 'createUpdateTerm', name, syns, language, isParent, existingTerm );
     let term = existingTerm;
+
     // If no existingTerm provided, search ES
     if ( !term ) term = await controllers.findDocByTerm( model, name );
     // If still no term, then create one
@@ -82,18 +86,21 @@ const bulkImport = model => async ( req, res, next ) => {
         primary: isParent,
         parents: isParent ? [] : [parent._id],
         synonymMapping: syns,
-        language
+        language,
       };
+
       term = await model.indexDocument( body ).then( parser.parseCreateResult( body ) );
+
       return term;
     }
     // We DO have an existing term so let's update the parents, synonyms, and language
     if ( !isParent && !term.parents.includes( parent._id ) ) term.parents.push( parent._id );
-    syns.forEach( ( syn ) => {
+    syns.forEach( syn => {
       if ( !term.synonymMapping.includes( syn ) ) term.synonymMapping.push( syn );
     } );
     term.language = { ...term.language, ...language };
     term = await controllers.updateDocument( model, term, term._id );
+
     return term;
   };
 
@@ -114,23 +121,25 @@ const bulkImport = model => async ( req, res, next ) => {
     // The return from the result is a promise containing the accumulated
     // terms array which is accessed thanks to await
     const seen = await rows.reduce(
-      async ( termsP, cols ) => termsP.then( async ( terms ) => {
+      async ( termsP, cols ) => termsP.then( async terms => {
         // If this is a skip row, then just return the accumulated terms
         if ( head.skip && cols[head.skip] ) return { ...terms };
 
         const syns = [];
+
         if ( head.synonyms && cols[head.synonyms] ) {
           // Add synonyms to the synonyms array if they don't already exist
           cols[head.synonyms]
             .toLowerCase()
             .replace( /[\r\n]+/g, '' )
             .split( ' | ' )
-            .forEach( ( syn ) => {
+            .forEach( syn => {
               if ( !syns.includes( syn ) ) syns.push( syn );
             } );
         }
         let existingTerm = null;
         let termName = '';
+
         if ( cols[head.parent] ) {
           // This is a primary category
           termName = cols[head.parent].toLowerCase();
@@ -140,12 +149,14 @@ const bulkImport = model => async ( req, res, next ) => {
           const language = createLanguage(
             termName,
             existingTerm,
-            head.translations ? { indices: head.translations, cols } : null
+            head.translations ? { indices: head.translations, cols } : null,
           );
           const term = await createUpdateTerm( termName, syns, language, true, existingTerm );
+
           parent = term;
+
           return { ...terms, [termName]: term };
-        } else if ( cols[head.child] ) {
+        } if ( cols[head.child] ) {
           // This is a child category
           termName = cols[head.child].toLowerCase();
           if ( terms[termName] ) {
@@ -154,17 +165,21 @@ const bulkImport = model => async ( req, res, next ) => {
           const language = createLanguage(
             termName,
             existingTerm,
-            head.translations ? { indices: head.translations, cols } : null
+            head.translations ? { indices: head.translations, cols } : null,
           );
           const term = await createUpdateTerm( termName, syns, language, false, existingTerm );
           const ret = { ...terms };
+
           ret[termName] = term;
+
           return { ...terms, [termName]: term };
         }
+
         return { ...terms };
       } ),
-      Promise.resolve( {} )
+      Promise.resolve( {} ),
     );
+
     return seen;
   };
 
@@ -173,6 +188,7 @@ const bulkImport = model => async ( req, res, next ) => {
   try {
     /** @type array */
     let rows = parse( csv );
+
     if ( rows instanceof Array !== true ) {
       return next( new Error( 'Error parsing CSV.' ) );
     }
@@ -182,10 +198,12 @@ const bulkImport = model => async ( req, res, next ) => {
       child: null,
       synonyms: null,
       skip: null,
-      translations: null
+      translations: null,
     };
+
     first.forEach( ( col, idx ) => {
       const title = col.toLowerCase();
+
       console.log( 'title', title );
       if ( title.indexOf( 'parent' ) === 0 ) head.parent = idx;
       else if ( title.indexOf( 'child' ) === 0 ) head.child = idx;
@@ -193,6 +211,7 @@ const bulkImport = model => async ( req, res, next ) => {
       else if ( title.indexOf( 'skip' ) === 0 ) head.skip = idx;
       else if ( title.indexOf( 'lang:' ) === 0 ) {
         const args = col.split( ' | ' ).map( val => val.trim() );
+
         if ( args.length > 1 ) {
           if ( !head.translations ) head.translations = [];
           head.translations.push( { locale: args[1], index: idx } );
@@ -213,7 +232,7 @@ const bulkImport = model => async ( req, res, next ) => {
 const overrides = {
   findDocByTerm: findDocByTerm( taxModel ),
   translateTermById: translateTermById( taxModel ),
-  bulkImport: bulkImport( taxModel )
+  bulkImport: bulkImport( taxModel ),
 };
 
 // taxonomy/controller
