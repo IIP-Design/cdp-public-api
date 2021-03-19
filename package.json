@@ -7,15 +7,15 @@
   "license": "MIT",
   "scripts": {
     "build:clear": "rimraf build",
-    "build:worker": "webpack --config webpack.worker.js --mode production --progress --colors",
-    "build:main": "webpack --mode production --progress --colors",
+    "build:worker": "webpack -c config/webpack.worker.js --mode production --progress --color",
+    "build:main": "webpack -c config/webpack.config.js --mode production --progress --color",
     "build": "npm run build:clear && npm run build:worker && npm run build:main",
+    "dev": "nodemon -e js -x babel-node --inspect=7000 src/index.js",
+    "dev:worker": "nodemon -e js -x babel-node --inspect=7001 src/workers/consumer.js",
     "lint": "eslint --ext .js --quiet ./",
     "start": "npm run start:main & npm run start:worker",
     "start:worker": "node build/consumer.js",
-    "start:main": "node build/server.js",
-    "dev": "nodemon -e js -x babel-node --inspect=7000 src/index.js",
-    "dev:worker": "nodemon -e js -x babel-node --inspect=7001 src/workers/consumer.js"
+    "start:main": "node build/server.js"
   },
   "dependencies": {
     "ajv": "^6.10.0",
@@ -68,12 +68,12 @@
     "eslint-plugin-node": "^11.1.0",
     "jest": "^26.6.3",
     "morgan": "^1.9.1",
-    "nodemon": "^2.0.2",
-    "rimraf": "^2.6.3",
+    "nodemon": "^2.0.7",
+    "rimraf": "^3.0.2",
     "start-server-webpack-plugin": "^2.2.5",
-    "webpack": "^4.35.3",
-    "webpack-cli": "^3.3.11",
-    "webpack-merge": "^4.2.1",
-    "webpack-node-externals": "^1.7.2"
+    "webpack": "^5.27.0",
+    "webpack-cli": "^4.5.0",
+    "webpack-merge": "^5.7.3",
+    "webpack-node-externals": "^2.5.2"
   }
 }
