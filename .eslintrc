@@ -1,6 +1,7 @@
 {
   "extends": ["@gpa-lab/eslint-config"],
-  "parser": "babel-eslint",
+  "ignorePatterns": ["build/", "node_modules"],
+  "parser": "@babel/eslint-parser",
   "settings": {
     "import/resolver": {
       "babel-module": {
