@@ -15,7 +15,7 @@
     "lint": "eslint --ext .js --quiet ./",
     "start": "npm run start:main & npm run start:worker",
     "start:worker": "node build/consumer.js",
-    "start:main": "node build/server.js"
+    "start:main": "node -r newrelic build/server.js"
   },
   "dependencies": {
     "ajv": "^7.2.1",
