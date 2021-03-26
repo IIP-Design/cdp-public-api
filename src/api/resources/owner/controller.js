@@ -8,11 +8,13 @@ const ownerModel = new OwnerModel();
 
 const indexDocument = model => async ( req, res, next ) => {
   const found = await controllers.findDocByTerm( model, req.body.name );
+
   if ( found ) {
     return next( new Error( 'Owner already exists.' ) );
   }
   const created = await model.indexDocument( req.body )
     .then( parser.parseCreateResult( req.body ) );
+
   res.json( created );
   next();
 };
@@ -29,12 +31,14 @@ const bulkImport = model => async ( req, res, next ) => {
    * @param language
    * @returns {Promise<*>}
    */
-  const createOwner = async ( owner ) => {
+  const createOwner = async owner => {
     let foundOnwer = await controllers.findDocByTerm( model, owner.name );
+
     // If term not found, then create one
     if ( !foundOnwer ) {
       foundOnwer = await model.indexDocument( owner ).then( parser.parseCreateResult( owner ) ); // eslint-disable-line max-len
     }
+
     return foundOnwer;
   };
 
@@ -47,23 +51,26 @@ const bulkImport = model => async ( req, res, next ) => {
    * @param rows
    * @returns {Promise<*>}
    */
-  const processRows = async ( rows ) => {
+  const processRows = async rows => {
     // In order keep this synchronous, we have to get really tricky
     // with reduce and promises. Essentially, we return a promise on each reduce
     // iteration which we then extract content from using .then
     // The return from the result is a promise containing the accumulated
     // terms array which is accessed thanks to await
     const seen = await rows.reduce(
-      async ( ownersP, cols ) => ownersP.then( async ( owners ) => {
+      async ( ownersP, cols ) => ownersP.then( async owners => {
         console.log( 'Processing:', JSON.stringify( cols, null, 2 ) );
         const created = createOwner( { name: cols[0] } );
+
         if ( created ) {
           return { ...owners, [cols[0].toLowerCase()]: created };
         }
+
         return owners;
       } ),
-      Promise.resolve( {} )
+      Promise.resolve( {} ),
     );
+
     return seen;
   };
 
@@ -72,6 +79,7 @@ const bulkImport = model => async ( req, res, next ) => {
   try {
     /** @type array */
     let rows = parse( csv );
+
     if ( rows instanceof Array !== true ) {
       return next( new Error( 'Error parsing CSV.' ) );
     }
@@ -85,7 +93,7 @@ const bulkImport = model => async ( req, res, next ) => {
 
 const overrides = {
   indexDocument: indexDocument( ownerModel ),
-  bulkImport: bulkImport( ownerModel )
+  bulkImport: bulkImport( ownerModel ),
 };
 
 export default generateControllers( ownerModel, overrides );

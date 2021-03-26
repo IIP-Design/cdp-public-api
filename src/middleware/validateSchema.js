@@ -2,6 +2,7 @@ const compileValidationErrors = errors => `Validation errors: ${errors.map( erro
 
 export const validate = ( Model, useDefaults = true ) => async ( req, res, next ) => {
   const result = Model.validateSchema( req.body, useDefaults );
+
   if ( !result.valid ) {
     return next( new Error( compileValidationErrors( result.errors ) ) );
   }

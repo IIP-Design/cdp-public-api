@@ -12,7 +12,7 @@ const config = {
   target: 'node',
   node: {
     __filename: true,
-    __dirname: true
+    __dirname: true,
   },
   externals: [nodeExternals( { whitelist: ['webpack/hot/poll?1000'] } )],
   plugins: [
@@ -24,13 +24,13 @@ const config = {
     new webpack.BannerPlugin( {
       banner: 'require("source-map-support").install();',
       raw: true,
-      entryOnly: false
-    } )
+      entryOnly: false,
+    } ),
   ],
   output: {
     path: path.join( __dirname, 'build' ),
-    filename: 'server.js'
-  }
+    filename: 'server.js',
+  },
 };
 
 module.exports = merge( baseConfig, config );

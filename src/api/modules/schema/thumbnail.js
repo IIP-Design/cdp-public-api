@@ -7,7 +7,7 @@ const thumbnailSchema = {
     longdesc: { type: 'string' },
     visibility: {
       type: 'string',
-      default: 'PUBLIC'
+      'default': 'PUBLIC',
     },
     sizes: {
       type: 'object',
@@ -18,8 +18,8 @@ const thumbnailSchema = {
             url: { type: 'string' },
             width: { type: 'number' },
             height: { type: 'number' },
-            orientation: { type: 'string' }
-          }
+            orientation: { type: 'string' },
+          },
         },
         medium: {
           type: ['object', 'null'],
@@ -27,8 +27,8 @@ const thumbnailSchema = {
             url: { type: 'string' },
             width: { type: 'number' },
             height: { type: 'number' },
-            orientation: { type: 'string' }
-          }
+            orientation: { type: 'string' },
+          },
         },
         large: {
           type: ['object', 'null'],
@@ -36,8 +36,8 @@ const thumbnailSchema = {
             url: { type: 'string' },
             width: { type: 'number' },
             height: { type: 'number' },
-            orientation: { type: 'string' }
-          }
+            orientation: { type: 'string' },
+          },
         },
         full: {
           type: ['object', 'null'],
@@ -45,12 +45,12 @@ const thumbnailSchema = {
             url: { type: 'string' },
             width: { type: 'number' },
             height: { type: 'number' },
-            orientation: { type: 'string' }
-          }
-        }
-      }
-    }
-  }
+            orientation: { type: 'string' },
+          },
+        },
+      },
+    },
+  },
 };
 
 export default thumbnailSchema;

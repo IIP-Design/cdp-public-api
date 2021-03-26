@@ -13,9 +13,9 @@ const apiErrorHandler = ( err, req, res, next ) => {
           error: 1,
           message: err.message || err.toString(),
           request: req.body,
-          params: { ...req.params, ...req.queryArgs }
+          params: { ...req.params, ...req.queryArgs },
         },
-        headers: { 'User-Agent': 'API' }
+        headers: { 'User-Agent': 'API' },
       },
       ( error, response, body ) => {
         if ( err ) {
@@ -27,7 +27,7 @@ const apiErrorHandler = ( err, req, res, next ) => {
           req.callbackSent = true;
           console.log( 'callback error response body', JSON.stringify( body, null, 2 ) );
         }
-      }
+      },
     );
     req.callbackSent = true;
   }

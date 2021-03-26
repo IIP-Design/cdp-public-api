@@ -43,8 +43,8 @@ async function handleCreate( data ) {
     exchangeName: 'publish',
     routingKey: 'result.create.package',
     data: {
-      projectId
-    }
+      projectId,
+    },
   } );
 
   console.log( '[x] PUBLISHED publish package create result' );
@@ -77,8 +77,8 @@ async function handleUpdate( data ) {
     exchangeName: 'publish',
     routingKey: 'result.update.package',
     data: {
-      projectId
-    }
+      projectId,
+    },
   } );
 
   console.log( '[x] PUBLISHED publish package update result' );
@@ -89,7 +89,7 @@ async function handleDelete( data ) {
 
   const {
     projectIds,
-    projectDirectory
+    projectDirectory,
   } = data;
 
   // 1. Delete package and each document type ES document
@@ -106,7 +106,7 @@ async function handleDelete( data ) {
   // 3. Log any errors
   if ( deletion.error ) {
     console.log(
-      `Deletion Error: ${deletion.error} for package with id: ${projectIds.id} or documents with ids  ${projectIds.documentIds}`
+      `Deletion Error: ${deletion.error} for package with id: ${projectIds.id} or documents with ids  ${projectIds.documentIds}`,
     );
     if ( deletion.failures && deletion.failures.length > 0 ) {
       console.log( deletion.failures );
@@ -117,16 +117,16 @@ async function handleDelete( data ) {
   await publishToChannel( {
     exchangeName: 'publish',
     routingKey: 'result.delete.package',
-    data: { projectId: projectIds.id }
+    data: { projectId: projectIds.id },
   } );
 
   console.log(
-    '[x] PUBLISHED publish package delete result'
+    '[x] PUBLISHED publish package delete result',
   );
 }
 
 export default {
   handleCreate,
   handleUpdate,
-  handleDelete
+  handleDelete,
 };

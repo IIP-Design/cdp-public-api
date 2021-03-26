@@ -16,7 +16,7 @@ const addQueryArgsProperty = ( req, res, next ) => {
   next();
 };
 
-const middlewareSetup = ( app ) => {
+const middlewareSetup = app => {
   app.use( compression() );
   app.use( addRequestId );
   app.use( addQueryArgsProperty );
@@ -24,8 +24,8 @@ const middlewareSetup = ( app ) => {
     hsts: {
       maxAge: 31536000,
       includeSubDomains: true,
-      preload: true
-    }
+      preload: true,
+    },
   } ) );
   app.use( cors() );
   app.use( fileUpload() );

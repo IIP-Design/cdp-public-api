@@ -11,9 +11,11 @@ import document from './utils/document';
 
 async function processRequest( channel, msg, processFunc ) {
   let data = null;
+
   try {
     // parse message
     const msgBody = msg.content.toString();
+
     data = JSON.parse( msgBody );
 
     await processFunc( data );
@@ -29,13 +31,15 @@ async function processRequest( channel, msg, processFunc ) {
 
 const consumePublishCreate = async () => {
   const channel = await getConsumerChannel();
+
   await channel.prefetch( 1 );
 
-  channel.consume( 'publish.create', async ( msg ) => {
+  channel.consume( 'publish.create', async msg => {
     // Better error handling here, check for msg and msg fields
     const { routingKey } = msg.fields;
 
     let createFn = null;
+
     switch ( routingKey ) {
       case 'create.video':
         createFn = video.handleCreate;
@@ -59,13 +63,15 @@ const consumePublishCreate = async () => {
 
 const consumePublishUpdate = async () => {
   const channel = await getConsumerChannel();
+
   await channel.prefetch( 1 );
 
-  channel.consume( 'publish.update', async ( msg ) => {
+  channel.consume( 'publish.update', async msg => {
     // Better error handling here, check for msg and msg fields
     const { routingKey } = msg.fields;
 
     let updateFn = null;
+
     switch ( routingKey ) {
       case 'update.video':
         updateFn = video.handleUpdate;
@@ -89,13 +95,15 @@ const consumePublishUpdate = async () => {
 
 const consumePublishDelete = async () => {
   const channel = await getConsumerChannel();
+
   await channel.prefetch( 1 );
 
-  channel.consume( 'publish.delete', async ( msg ) => {
+  channel.consume( 'publish.delete', async msg => {
     // Better error handling here, check for msg and msg fields
     const { routingKey } = msg.fields;
 
     let deleteFn = null;
+
     switch ( routingKey ) {
       case 'delete.video':
         deleteFn = video.handleDelete;
@@ -119,10 +127,12 @@ const consumePublishDelete = async () => {
 
 const consumeUtilProcessDocument = async () => {
   const channel = await getConsumerChannel();
+
   await channel.prefetch( 1 );
 
-  channel.consume( 'util.process', async ( msg ) => {
+  channel.consume( 'util.process', async msg => {
     const { routingKey } = msg.fields;
+
     if ( routingKey === 'convert.document' ) {
       document.handleConvert( channel, msg );
     }

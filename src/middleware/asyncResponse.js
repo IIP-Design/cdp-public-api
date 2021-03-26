@@ -13,4 +13,5 @@ const asyncResponse = ( throwNotFound = true ) => ( req, res, next ) => {
   }
   next();
 };
+
 export default asyncResponse;

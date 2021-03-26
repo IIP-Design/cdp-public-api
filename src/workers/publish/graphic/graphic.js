@@ -42,8 +42,8 @@ async function handleCreate( data ) {
     exchangeName: 'publish',
     routingKey: 'result.create.graphic',
     data: {
-      projectId
-    }
+      projectId,
+    },
   } );
 
   console.log( '[x] PUBLISHED publish GRAPHIC create result' );
@@ -76,8 +76,8 @@ async function handleUpdate( data ) {
     exchangeName: 'publish',
     routingKey: 'result.update.graphic',
     data: {
-      projectId
-    }
+      projectId,
+    },
   } );
 
   console.log( '[x] PUBLISHED publish GRAPHIC update result' );
@@ -112,8 +112,8 @@ async function handleDelete( data ) {
     exchangeName: 'publish',
     routingKey: 'result.delete.graphic',
     data: {
-      projectId
-    }
+      projectId,
+    },
   } );
 
   console.log( '[x] PUBLISHED publish GRAPHIC delete result' );
@@ -122,5 +122,5 @@ async function handleDelete( data ) {
 export default {
   handleCreate,
   handleUpdate,
-  handleDelete
+  handleDelete,
 };

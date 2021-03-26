@@ -1,6 +1,15 @@
 {
   "extends": ["@gpa-lab/eslint-config"],
-  "parser": "babel-eslint",
+  "ignorePatterns": ["build/", "node_modules"],
+  "parser": "@babel/eslint-parser",
+  "overrides": [
+    {
+      "files": ["**/webpack.*.js"],
+      "rules": {
+        "node/no-unpublished-require": "off"
+      }
+    }
+  ],
   "settings": {
     "import/resolver": {
       "babel-module": {

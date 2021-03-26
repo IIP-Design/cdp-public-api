@@ -4,13 +4,14 @@ import * as mappings from './mappings';
 import client from '../../services/elasticsearch';
 
 const MAPPINGS = {
-  videos: mappings.getVideoMapping()
+  videos: mappings.getVideoMapping(),
 };
 
 const getDateStamp = () => {
   const now = new Date();
   const _month = now.getMonth();
   const month = _month < 10 ? `0${_month}` : _month;
+
   return `${now.getFullYear()}${month}${now.getDate()}`;
 };
 
@@ -42,13 +43,14 @@ const _getAlias = index => client.indices.getAlias( { index } );
 const _reindex = ( oldIndex, newIndex, size, script, query ) => {
   const body = {
     source: {
-      index: oldIndex
+      index: oldIndex,
     },
     dest: {
       index: newIndex,
-      version_type: 'external'
-    }
+      version_type: 'external',
+    },
   };
+
   if ( size ) {
     body.size = size;
   }
@@ -58,6 +60,7 @@ const _reindex = ( oldIndex, newIndex, size, script, query ) => {
   if ( query ) {
     body.source.query = query;
   }
+
   return client.reindex( { body } );
 };
 
@@ -71,9 +74,9 @@ export const updateAlias = ( req, res, next ) => {
       body: {
         actions: [
           { remove: { index: removeIndex, alias: indexAlias } },
-          { add: { index: addIndex, alias: indexAlias } }
-        ]
-      }
+          { add: { index: addIndex, alias: indexAlias } },
+        ],
+      },
     } )
     .then( doc => res.status( 200 ).json( doc ) )
     .catch( err => next( err ) );
@@ -150,6 +153,7 @@ export const reindex = async ( req, res, next ) => {
     // new index and tthe indexing operation can be checked
     // to ensure it executed correctly
     const indexExists = await _exists( newIndex );
+
     if ( indexExists ) {
       await _remove( newIndex );
     }

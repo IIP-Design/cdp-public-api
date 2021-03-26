@@ -1,10 +1,9 @@
 import {} from 'dotenv/config';
-// import apm from 'elastic-apm-node/start';
-
-require( 'newrelic' );
 
 import http from 'http';
 import app from './server';
+
+require( 'newrelic' );
 
 // Used for module hot reloading, will maintain state
 const server = http.createServer( app );

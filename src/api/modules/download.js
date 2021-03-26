@@ -9,6 +9,7 @@ import tempFiles from '../../services/tempfiles';
 const md5hash = path => new Promise( ( resolve, reject ) => {
   const hash = crypto.createHash( 'md5' );
   const rs = fs.createReadStream( path );
+
   rs.on( 'error', reject );
   rs.on( 'data', chunk => hash.update( chunk ) );
   rs.on( 'end', () => resolve( hash.digest( 'hex' ) ) );
@@ -35,16 +36,18 @@ export default function download( url, requestId ) {
     let len = 0;
     let total = 0;
     let lastUpdate = 0;
+
     Request.get( {
       url: encodeURI( url ),
       gzip: true,
-      headers: { 'User-Agent': 'API' }
+      headers: { 'User-Agent': 'API' },
     } )
       .on( 'timeout', () => {
         console.error( `Timeout downloading [${url}]` );
       } )
-      .on( 'data', ( chunk ) => {
+      .on( 'data', chunk => {
         const now = new Date();
+
         cur += chunk.length;
         if ( now - lastUpdate > 10 * 1000 ) {
           // eslint-disable-next-line no-mixed-operators
@@ -54,15 +57,17 @@ export default function download( url, requestId ) {
           lastUpdate = now;
         }
       } )
-      .on( 'error', ( error ) => {
+      .on( 'error', error => {
         console.error( `Error downloading [${url}]`, error );
+
         return reject( error );
       } )
-      .on( 'uncaughtException', ( error ) => {
+      .on( 'uncaughtException', error => {
         console.error( `Unhandled error downloading [${url}]`, error );
+
         return reject( error );
       } )
-      .on( 'response', ( response ) => {
+      .on( 'response', response => {
         len = parseInt( response.headers['content-length'], 10 );
         total = len / 1048576; // 1048576 - bytes in  1Megabyte
 
@@ -72,10 +77,11 @@ export default function download( url, requestId ) {
         props.ext = Path.extname( props.basename );
         // Cross check ext against known extensions for this content type
         const typeExts = Mime.extensions[props.contentType];
+
         if ( typeExts ) {
           if (
-            props.ext.replace( '.', '' ) !== 'srt' && // do not remove srt extension
-            typeExts.indexOf( props.ext.replace( '.', '' ) ) < 0
+            props.ext.replace( '.', '' ) !== 'srt' // do not remove srt extension
+            && typeExts.indexOf( props.ext.replace( '.', '' ) ) < 0
           ) {
             // extension does not exist so use the default extension
             props.ext = `.${Mime.extension( props.contentType )}`;
@@ -84,12 +90,13 @@ export default function download( url, requestId ) {
       } )
       .on( 'end', () => {
         const exists = fs.existsSync( tmpObj.name );
+
         console.log( `download complete and ${tmpObj.name} exists:`, exists );
         if ( !exists ) {
           return reject( new Error( 'File created from download does not exist.' ) );
         }
         md5hash( tmpObj.name )
-          .then( ( result ) => {
+          .then( result => {
             props.md5 = result;
             resolve( { props, filePath: tmpObj.name } );
           } )

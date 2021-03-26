@@ -5,18 +5,21 @@ const router = new Router();
 
 router.get( '/', async ( req, res ) => {
   const url = vimeo.getAuthUrl( req.query.callback );
+
   res.redirect( url );
 } );
 
 router.get( '/callback', async ( req, res, next ) => {
   const tokens = await vimeo.getTokenFromCode( req.query.code ).catch( err => err );
   let error = null;
+
   if ( tokens instanceof Error ) {
     error = tokens.message;
     console.error( tokens );
   }
   if ( req.query.state ) {
     let redirect = req.query.state;
+
     if ( redirect.indexOf( '?' ) !== -1 ) redirect += '&';
     else redirect += '?';
     if ( error ) redirect += `error=${encodeURIComponent( error )}`;

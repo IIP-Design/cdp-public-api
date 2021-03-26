@@ -13,9 +13,10 @@ class Video extends AbstractModel {
   static validateSchema( body, useDefaults = true ) {
     Video.compileSchema( useDefaults );
     const valid = Video.validate( body );
+
     return {
       valid,
-      errors: Video.validate.errors
+      errors: Video.validate.errors,
     };
   }
 
@@ -25,6 +26,7 @@ class Video extends AbstractModel {
     // 'removeAdditional' removes any properties during validation that are not in the schema
     // 'coerceTypes' will coerce to appropriate type.  using to coerce string number to number
     const ajv = new Ajv( { useDefaults, removeAdditional: 'all', coerceTypes: true } );
+
     Video.validate = ajv.compile( videoSchema );
   }
 
@@ -38,6 +40,7 @@ class Video extends AbstractModel {
   getAssets( json ) {
     // this could have urls to process from various nodes in json doc
     const assets = [];
+
     json.unit.forEach( ( unit, unitIndex ) => {
       unit.source.forEach( ( src, srcIndex ) => {
         assets.push( {
@@ -49,17 +52,18 @@ class Video extends AbstractModel {
           video_quality: src.video_quality || null,
           unitIndex,
           srcIndex,
-          assetType: 'source'
+          assetType: 'source',
         } );
       } );
       if ( unit.transcript ) {
         const trans = unit.transcript;
+
         assets.push( {
           downloadUrl: trans.srcUrl,
           md5: trans.md5 || null,
           unitIndex,
           srcIndex: -1,
-          assetType: 'transcript'
+          assetType: 'transcript',
         } );
       }
       if ( unit.srt ) {
@@ -68,14 +72,14 @@ class Video extends AbstractModel {
           md5: unit.srt.md5 || null,
           unitIndex,
           srcIndex: -1,
-          assetType: 'srt'
+          assetType: 'srt',
         } );
       }
     } );
     if ( json.thumbnail && json.thumbnail.sizes ) {
       [
-        'small', 'medium', 'large', 'full'
-      ].forEach( ( size ) => {
+        'small', 'medium', 'large', 'full',
+      ].forEach( size => {
         if ( json.thumbnail.sizes[size] ) {
           assets.push( {
             downloadUrl: json.thumbnail.sizes[size].url,
@@ -85,11 +89,12 @@ class Video extends AbstractModel {
             orientation: json.thumbnail.sizes[size].orientation,
             unitIndex: size,
             srcIndex: -1,
-            assetType: 'thumbnail'
+            assetType: 'thumbnail',
           } );
         }
       } );
     }
+
     return assets;
   }
 
@@ -106,6 +111,7 @@ class Video extends AbstractModel {
       case 'source':
         if ( asset.unitIndex !== null && asset.srcIndex !== null ) {
           const source = this.body.unit[asset.unitIndex].source[asset.srcIndex];
+
           source.downloadUrl = asset.downloadUrl;
           source.stream = asset.stream;
           source.md5 = asset.md5;
@@ -114,9 +120,10 @@ class Video extends AbstractModel {
           source.video_quality = asset.video_quality;
         } else {
           console.log( 'attempting to update asset via hash' );
-          this.body.unit.forEach( ( unit ) => {
-            unit.source.forEach( ( src ) => {
+          this.body.unit.forEach( unit => {
+            unit.source.forEach( src => {
               const temp = src;
+
               if ( src.md5 === asset.md5 ) {
                 console.log( 'found match, updating stream', asset.stream );
                 temp.stream = asset.stream;
@@ -127,6 +134,7 @@ class Video extends AbstractModel {
         break;
       case 'thumbnail': {
         const source = this.body.thumbnail.sizes[asset.unitIndex];
+
         source.url = asset.downloadUrl;
         source.width = asset.width;
         source.height = asset.height;
@@ -163,8 +171,9 @@ class Video extends AbstractModel {
   getTitle() {
     let title = null;
     let lang = null;
+
     try {
-      this.body.unit.forEach( ( unit ) => {
+      this.body.unit.forEach( unit => {
         if ( !title || ( unit.language && unit.language.language_code === 'en' ) ) {
           // Ensure we only take the first appearing English title
           if ( !lang || lang !== 'en' ) {
@@ -175,6 +184,7 @@ class Video extends AbstractModel {
       } );
     } catch ( e ) {} // eslint-disable-line no-empty
     if ( !title ) return `Post #${this.body.post_id}`;
+
     return title;
   }
 }

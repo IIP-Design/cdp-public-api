@@ -1,7 +1,8 @@
 import fs from 'fs';
-import tus from 'tus-js-client';
+
 import Request from 'request';
 import Stream from 'stream';
+import tus from 'tus-js-client';
 
 /**
  * Upload the video at the provided filePath to Cloudflare Stream.
@@ -18,6 +19,7 @@ import Stream from 'stream';
 const upload = filePath => new Promise( ( resolve, reject ) => {
   const maxEncodingTracks = 300; // number of tracking requests before timeout
   const pass = new Stream.PassThrough();
+
   fs.createReadStream( filePath ).pipe( pass );
   const sizeStats = fs.statSync( filePath );
   const endpoint = `https://api.cloudflare.com/client/v4/zones/${
@@ -26,7 +28,7 @@ const upload = filePath => new Promise( ( resolve, reject ) => {
   const headers = {
     'X-Auth-Key': process.env.CF_STREAM_KEY || '',
     'X-Auth-Email': process.env.CF_STREAM_EMAIL || '',
-    'Content-Type': 'application/json'
+    'Content-Type': 'application/json',
   };
   let uploadComplete = null;
   const uploadObj = new tus.Upload( pass, {
@@ -34,10 +36,10 @@ const upload = filePath => new Promise( ( resolve, reject ) => {
     headers,
     chunkSize: 5242880 * 2, // 10 mb
     retryDelays: [
-      0, 1000, 3000, 5000
+      0, 1000, 3000, 5000,
     ],
     uploadSize: sizeStats.size,
-    onError: ( error ) => {
+    onError: error => {
       console.log( 'cf error', `${error}` );
       reject( new Error( error ) );
     },
@@ -45,6 +47,7 @@ const upload = filePath => new Promise( ( resolve, reject ) => {
       const uid = uploadObj.url.replace( endpoint, '' ).replace( '/', '' );
       // eslint-disable-next-line no-mixed-operators
       const percentage = bytesUploaded / bytesTotal * 100;
+
       if ( !uploadComplete || Math.round( percentage ) !== Math.round( uploadComplete ) ) {
         uploadComplete = percentage;
         console.log( `Uploading to Cloudflare [${uid}] - ${percentage.toFixed( 2 )}%` );
@@ -55,6 +58,7 @@ const upload = filePath => new Promise( ( resolve, reject ) => {
       // We will track the encoding process and resolve once/if it successfully completes.
       const streamUrl = uploadObj.url;
       const ret = { url: '', uid: '', thumbnail: '' };
+
       if ( streamUrl ) {
         let tracks = 0;
         let completed = null;
@@ -68,7 +72,7 @@ const upload = filePath => new Promise( ( resolve, reject ) => {
             {
               url: streamUrl,
               headers,
-              json: true
+              json: true,
             },
             ( error, response, body ) => {
               if ( error ) {
@@ -78,8 +82,10 @@ const upload = filePath => new Promise( ( resolve, reject ) => {
               } else {
                 const uid = body.result.uid; // eslint-disable-line prefer-destructuring
                 const status = body.result.status; // eslint-disable-line prefer-destructuring
+
                 if ( status.state === 'inprogress' ) {
                   const pctComplete = parseFloat( status.pctComplete );
+
                   if ( !completed || Math.round( pctComplete ) !== Math.round( completed ) ) {
                     completed = pctComplete.toFixed( 2 );
                     console.log( `Encoding on Cloudflare [${uid}] - ${completed}%` );
@@ -90,6 +96,7 @@ const upload = filePath => new Promise( ( resolve, reject ) => {
                   ret.url = body.result.preview;
                   ret.thumbnail = body.result.thumbnail;
                   ret.site = 'cloudflare';
+
                   return resolve( { stream: ret } );
                 } else if ( status.state === 'queued' ) {
                   if ( !state ) {
@@ -104,15 +111,17 @@ const upload = filePath => new Promise( ( resolve, reject ) => {
                 // Continue tracking requests every 2 seconds.
                 setTimeout( trackEncoding, 2000 );
               }
-            }
+            },
           );
         };
+
         trackEncoding();
       } else if ( !streamUrl ) {
         reject( new Error( 'No media URL returned.' ) );
       }
-    }
+    },
   } );
+
   try {
     uploadObj.start();
   } catch ( err ) {
@@ -134,61 +143,65 @@ const list = () => new Promise( ( resolve, reject ) => {
   const headers = {
     'X-Auth-Key': process.env.CF_STREAM_KEY || '',
     'X-Auth-Email': process.env.CF_STREAM_EMAIL || '',
-    'Content-Type': 'application/json'
+    'Content-Type': 'application/json',
   };
+
   Request.get(
     {
       url: endpoint,
       headers,
-      json: true
+      json: true,
     },
     ( err, res, body ) => {
       console.log( JSON.stringify( body, null, 2 ) );
       if ( err ) return reject( err );
       resolve( body );
-    }
+    },
   );
 } );
 
-const remove = ( uid ) => {
+const remove = uid => {
   const endpoint = `https://api.cloudflare.com/client/v4/zones/${
     process.env.CF_STREAM_ZONE
   }/media/${uid}`;
   const headers = {
     'X-Auth-Key': process.env.CF_STREAM_KEY || '',
     'X-Auth-Email': process.env.CF_STREAM_EMAIL || '',
-    'Content-Type': 'application/json'
+    'Content-Type': 'application/json',
   };
+
   console.log( 'Deleting from Cloudflare: ', uid );
   Request(
     {
       url: endpoint,
       headers,
       json: true,
-      method: 'DELETE'
+      method: 'DELETE',
     },
-    ( err ) => {
+    err => {
       if ( err ) {
         console.log(
           'Error deleting from Cloudflare, UID: ',
           uid,
           '\r\n',
-          JSON.stringify( err, null, 2 )
+          JSON.stringify( err, null, 2 ),
         );
       }
-    }
+    },
   );
 };
 
 const removeAll = () => new Promise( async ( resolve, reject ) => {
-  const videos = await list().catch( ( err ) => {
+  const videos = await list().catch( err => {
     console.error( err );
     reject( err );
+
     return null;
   } );
+
   if ( !videos.success ) return reject( videos );
   if ( videos && videos.results && videos.results.length > 0 ) {
-    videos.results.forEach( ( video ) => {
+    videos.results.forEach( video => {
       remove( video.uid );
     } );
   }
@@ -199,7 +212,7 @@ const cloudflare = {
   upload,
   list,
   remove,
-  removeAll
+  removeAll,
 };
 
 export default cloudflare;

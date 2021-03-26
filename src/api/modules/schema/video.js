@@ -16,30 +16,30 @@ const videoSchema = {
     thumbnail: thumbnailSchema,
     categories: {
       type: 'array',
-      default: [],
-      items: { type: 'string' }
+      'default': [],
+      items: { type: 'string' },
     },
     site_taxonomies: {
       type: 'object',
-      default: {},
+      'default': {},
       patternProperties: {
         '.*': {
           type: 'array',
-          default: [],
+          'default': [],
           items: {
             type: 'object',
             properties: {
               id: { type: 'integer' },
-              name: { type: 'string' }
+              name: { type: 'string' },
             },
-            required: ['name']
-          }
-        }
-      }
+            required: ['name'],
+          },
+        },
+      },
     },
     unit: {
       type: 'array',
-      default: [{ source: [] }],
+      'default': [{ source: [] }],
       items: {
         type: 'object',
         properties: {
@@ -48,16 +48,16 @@ const videoSchema = {
           desc: { type: 'string' },
           categories: {
             type: 'array',
-            items: { type: 'string' }
+            items: { type: 'string' },
           },
           tags: {
             type: 'array',
-            items: { type: 'string' }
+            items: { type: 'string' },
           },
           thumbnail: thumbnailSchema,
           source: {
             type: 'array',
-            default: [],
+            'default': [],
             items: {
               type: 'object',
               properties: {
@@ -66,39 +66,39 @@ const videoSchema = {
                 downloadUrl: { type: 'string' },
                 streamUrl: {
                   type: 'array',
-                  default: [],
+                  'default': [],
                   items: {
                     type: 'object',
                     properties: {
                       url: { type: 'string' },
                       site: { type: 'string' },
                       link: { type: 'string' },
-                      uid: { type: 'string' }
-                    }
-                  }
+                      uid: { type: 'string' },
+                    },
+                  },
                 },
                 stream: {
                   type: 'object',
-                  default: {
+                  'default': {
                     url: '',
-                    uid: ''
+                    uid: '',
                   },
                   properties: {
                     site: { type: 'string' },
                     url: { type: 'string' },
                     uid: { type: 'string' },
                     link: { type: 'string' },
-                    thumbnail: { type: 'string' }
-                  }
+                    thumbnail: { type: 'string' },
+                  },
                 },
                 duration: {
-                  type: 'string'
+                  type: 'string',
                 },
                 filetype: { type: 'string' },
                 video_quality: { type: 'string' },
                 visibility: {
                   type: 'string',
-                  default: 'PUBLIC'
+                  'default': 'PUBLIC',
                 },
                 md5: { type: 'string' },
                 size: {
@@ -107,11 +107,11 @@ const videoSchema = {
                     width: { type: 'number' },
                     height: { type: 'number' },
                     filesize: { type: 'number' },
-                    bitrate: { type: 'number' }
-                  }
-                }
-              }
-            }
+                    bitrate: { type: 'number' },
+                  },
+                },
+              },
+            },
           },
           transcript: {
             type: 'object',
@@ -119,11 +119,11 @@ const videoSchema = {
               srcUrl: { type: 'string' },
               visibility: {
                 type: 'string',
-                default: 'PUBLIC'
+                'default': 'PUBLIC',
               },
               md5: { type: 'string' },
-              text: { type: 'string' }
-            }
+              text: { type: 'string' },
+            },
           },
           srt: {
             type: 'object',
@@ -131,17 +131,17 @@ const videoSchema = {
               srcUrl: { type: 'string' },
               visibility: {
                 type: 'string',
-                default: 'PUBLIC'
+                'default': 'PUBLIC',
               },
-              md5: { type: 'string' }
-            }
-          }
-        }
-      }
+              md5: { type: 'string' },
+            },
+          },
+        },
+      },
     },
     supportFiles: {
       type: 'array',
-      default: [],
+      'default': [],
       items: {
         type: 'object',
         properties: {
@@ -149,15 +149,15 @@ const videoSchema = {
           supportFileType: { type: 'string' },
           visibility: {
             type: 'string',
-            default: 'PUBLIC'
+            'default': 'PUBLIC',
           },
           srcUrl: { type: 'string' },
-          text: { type: 'string' }
-        }
-      }
-    }
+          text: { type: 'string' },
+        },
+      },
+    },
   },
-  required: ['post_id', 'site']
+  required: ['post_id', 'site'],
 };
 
 export default videoSchema;

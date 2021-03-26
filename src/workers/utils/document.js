@@ -6,7 +6,7 @@ async function handleConvert( channel, msg ) {
   console.log( '[√] Handle a util process document request' );
 
   const {
-    env: { WORKER_GENERATE_THUMBNAIL }
+    env: { WORKER_GENERATE_THUMBNAIL },
   } = process;
 
   const createThumb = WORKER_GENERATE_THUMBNAIL !== 'no';
@@ -15,7 +15,7 @@ async function handleConvert( channel, msg ) {
   const data = JSON.parse( msgBody );
 
   const {
-    id, url, assetPath, thumbnailFilename
+    id, url, assetPath, thumbnailFilename,
   } = data;
 
   let content = '';
@@ -46,8 +46,8 @@ async function handleConvert( channel, msg ) {
       title: thumbnailFilename,
       content,
       thumbnailUrl: createThumb ? thumbnailUrl : 'NONE',
-      error
-    }
+      error,
+    },
   } );
 
   console.log( '[x] PUBLISHED util process convert result' );

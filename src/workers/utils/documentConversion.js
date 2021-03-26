@@ -1,10 +1,12 @@
 import path from 'path';
+
 import axios from 'axios';
 import getStream from 'get-stream';
 import mammoth from 'mammoth';
-import tmp from 'tmp';
 import nodeHtmlToImage from 'node-html-to-image';
+import tmp from 'tmp';
 import xss from 'xss';
+
 import { getSignedUrl, uploadAsset } from '../services/aws/s3';
 
 tmp.setGracefulCleanup( { unsafeCleanup: true } );
@@ -26,7 +28,7 @@ const htmlToText = ( string = '' ) => string
  */
 const getDocxBuffer = url => axios
   .get( url, { responseType: 'stream' } )
-  .then( async ( res ) => {
+  .then( async res => {
     if ( res.status === 200 ) {
       try {
         return await getStream.buffer( res.data );
@@ -34,6 +36,7 @@ const getDocxBuffer = url => axios
         console.log( error.bufferedData );
       }
     }
+
     return Buffer.from( [] );
   } )
   .then( buf => buf )
@@ -44,7 +47,7 @@ const getDocxBuffer = url => axios
  * @param {object <Buffer>} input document file buffer
  * @see https://github.com/mwilliamson/mammoth.js
  */
-const getDocumentContent = async ( input ) => {
+const getDocumentContent = async input => {
   const response = await mammoth.convertToHtml( input );
 
   if ( response ) {
@@ -58,7 +61,7 @@ const getDocumentContent = async ( input ) => {
       return {
         rawText: htmlToText( value ),
         html: xss( value ),
-        markdown: '' // omit md since not used by client
+        markdown: '', // omit md since not used by client
       };
     }
   }
@@ -66,7 +69,7 @@ const getDocumentContent = async ( input ) => {
   return null;
 };
 
-const getCleanFileName = ( filename ) => {
+const getCleanFileName = filename => {
   const _filename = filename
     .replace( /[&/\\#,+$~%'"`=:;*?^<>@(){}|[\]]/g, '' )
     .replace( /\s/g, '_' )
@@ -103,7 +106,7 @@ export const generateDocThumbnail = async ( html, assetPath, outputName ) => {
         </head>
         <body>${html}</body>
       </html>
-      `
+      `,
   } ).catch( err => console.log( err ) );
 
   // upload to aws
@@ -119,8 +122,9 @@ export const generateDocThumbnail = async ( html, assetPath, outputName ) => {
  * Converts docx content
  * @param {object} document DocumentFile object
  */
-export const convertDocxContent = async ( url ) => {
+export const convertDocxContent = async url => {
   let content = null;
+
   if ( url ) {
     const signed = await getSignedUrl( { key: url } );
     const buffer = await getDocxBuffer( signed.url );

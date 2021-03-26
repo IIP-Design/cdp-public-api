@@ -18,12 +18,14 @@ const bulkImport = model => async ( req, res, next ) => {
    * @param language
    * @returns {Promise<*>}
    */
-  const createLanguage = async ( language ) => {
+  const createLanguage = async language => {
     let foundLang = await controllers.findDocByTerm( model, language.locale );
+
     // If term not found, then create one
     if ( !foundLang ) {
       foundLang = await model.indexDocument( language ).then( parser.parseCreateResult( language ) ); // eslint-disable-line max-len
     }
+
     return foundLang;
   };
 
@@ -44,15 +46,17 @@ const bulkImport = model => async ( req, res, next ) => {
     // The return from the result is a promise containing the accumulated
     // terms array which is accessed thanks to await
     const seen = await rows.reduce(
-      async ( langsP, cols ) => langsP.then( async ( langs ) => {
+      async ( langsP, cols ) => langsP.then( async langs => {
         console.log( 'Processing:', JSON.stringify( cols, null, 2 ) );
         const lang = {
           language_code: cols[head.code] || null,
           display_name: cols[head.display] || null,
-          native_name: cols[head.native] || null
+          native_name: cols[head.native] || null,
         };
+
         if ( !lang.language_code || !lang.display_name || !lang.native_name ) {
           console.error( 'Invalid lang', JSON.stringify( lang, null, 2 ) );
+
           return langs;
         }
 
@@ -70,14 +74,16 @@ const bulkImport = model => async ( req, res, next ) => {
           if ( langs[lang.locale] ) return langs;
 
           const language = await createLanguage( lang );
+
           return { ...langs, [language.locale]: language };
         }
         console.error( 'Invalid lang', JSON.stringify( lang, null, 2 ) );
 
         return langs;
       } ),
-      Promise.resolve( {} )
+      Promise.resolve( {} ),
     );
+
     return seen;
   };
 
@@ -86,6 +92,7 @@ const bulkImport = model => async ( req, res, next ) => {
   try {
     /** @type array */
     let rows = parse( csv );
+
     if ( rows instanceof Array !== true ) {
       return next( new Error( 'Error parsing CSV.' ) );
     }
@@ -95,10 +102,12 @@ const bulkImport = model => async ( req, res, next ) => {
       locale: null,
       text_direction: 'ltr',
       display_name: '',
-      native_name: ''
+      native_name: '',
     };
+
     first.forEach( ( col, idx ) => {
       const title = col.toLowerCase();
+
       console.log( 'title', title );
       if ( title.indexOf( 'locale' ) === 0 ) head.locale = idx;
       else if ( title.indexOf( 'display' ) === 0 ) head.display = idx;
@@ -118,7 +127,7 @@ const bulkImport = model => async ( req, res, next ) => {
 };
 
 const overrides = {
-  bulkImport: bulkImport( langModel )
+  bulkImport: bulkImport( langModel ),
 };
 
 export default generateControllers( langModel, overrides );

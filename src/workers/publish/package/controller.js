@@ -14,10 +14,11 @@ const PRODUCTION_BUCKET = process.env.AWS_S3_PRODUCTION_BUCKET;
  *
  * @returns object  elasticsearch doc
  */
-const parseFindResult = ( result ) => {
+const parseFindResult = result => {
   if ( result && result.hits && result.hits.total === 1 ) {
     // should return only 1 unique result
     const [hit] = result.hits.hits;
+
     return hit;
   }
 };
@@ -33,10 +34,11 @@ const findDocument = async ( projectId, index, type ) => {
   const doc = await client.search( {
     index,
     type,
-    q: `site:${INDEXING_DOMAIN} AND id:${projectId}`
+    q: `site:${INDEXING_DOMAIN} AND id:${projectId}`,
   } );
 
   const foundDoc = parseFindResult( doc );
+
   return foundDoc || null;
 };
 
@@ -48,7 +50,7 @@ const findDocument = async ( projectId, index, type ) => {
 const _createDocument = async ( index, type, body ) => client.index( {
   index,
   type,
-  body
+  body,
 } );
 
 /**
@@ -65,8 +67,8 @@ const _updateDocument = async ( index, type, body, esId ) => client.update( {
   type,
   id: esId,
   body: {
-    doc: body
-  }
+    doc: body,
+  },
 } );
 
 /**
@@ -79,7 +81,7 @@ const _updateDocument = async ( index, type, body, esId ) => client.update( {
 const _deleteDocument = async ( index, type, id ) => client.deleteByQuery( {
   index,
   type,
-  q: `site:${INDEXING_DOMAIN} AND id:${id}`
+  q: `site:${INDEXING_DOMAIN} AND id:${id}`,
 } );
 
 /**
@@ -97,7 +99,7 @@ const deletePackageDocuments = async ( publisherDocuments, esDocuments ) => {
 
   if ( esItemsToDelete.length ) {
     return Promise.all(
-      esItemsToDelete.map( async ( itemId ) => {
+      esItemsToDelete.map( async itemId => {
         // delete doc from ES
         await _deleteDocument( 'documents', 'document', itemId );
 
@@ -107,9 +109,10 @@ const deletePackageDocuments = async ( publisherDocuments, esDocuments ) => {
 
         if ( _document && _document._source && _document._source.url ) {
           const path = url.parse( _document._source.url ).pathname.substr( 1 );
+
           return deleteS3Asset( path, PRODUCTION_BUCKET );
         }
-      } )
+      } ),
     );
   }
 
@@ -123,19 +126,22 @@ const deletePackageDocuments = async ( publisherDocuments, esDocuments ) => {
  * @return promise
  */
 const createOrUpdatePackageDocuments = async documents => Promise.all(
-  documents.map( async ( document ) => {
+  documents.map( async document => {
     const _document = { ...document };
+
     if ( document.tags ) {
       _document.tags = await convertCategories( document.tags, document.language );
     }
     const esDoc = await findDocument( document.id, 'documents', 'document' );
+
     if ( esDoc ) {
       // update
       return _updateDocument( 'documents', 'document', _document, esDoc._id );
     }
+
     // create
     return _createDocument( 'documents', 'document', _document );
-  } )
+  } ),
 );
 
 /**
@@ -151,6 +157,7 @@ export const updateDocument = async ( projectId, projectData ) => {
 
   // Find package
   const esPackage = await findDocument( projectId, 'packages', 'package' );
+
   if ( !esPackage ) {
     return { error: 'EsDocNotFound' };
   }
@@ -176,7 +183,7 @@ export const updateDocument = async ( projectId, projectData ) => {
     created,
     visibility,
     language,
-    owner
+    owner,
   } = projectData;
 
   const pkgDoc = {
@@ -189,7 +196,7 @@ export const updateDocument = async ( projectId, projectData ) => {
     visibility,
     language,
     owner,
-    items: updatedItems
+    items: updatedItems,
   };
 
   return _updateDocument( 'packages', 'package', pkgDoc, esPackage._id );
@@ -210,17 +217,19 @@ export const createDocument = async ( projectId, projectData ) => {
 
   // Index each individual document
   const items = await Promise.all(
-    documents.map( async ( document ) => {
+    documents.map( async document => {
       // If doc has tags, convert to elastic tags using elastic tag ids
       const _document = { ...document };
+
       if ( document.tags ) {
         _document.tags = await convertCategories( document.tags, document.language );
       }
 
       await _createDocument( 'documents', 'document', _document );
+
       // todo: check for success, error
       return { id: document.id, type: 'document' };
-    } )
+    } ),
   );
 
   // Index package
@@ -235,7 +244,7 @@ export const createDocument = async ( projectId, projectData ) => {
     created,
     language,
     visibility,
-    owner
+    owner,
   } = projectData;
 
   const pkgDoc = {
@@ -250,7 +259,7 @@ export const createDocument = async ( projectId, projectData ) => {
     language,
     visibility,
     owner,
-    items
+    items,
   };
 
   return _createDocument( 'packages', 'package', pkgDoc );
@@ -262,23 +271,23 @@ export const createDocument = async ( projectId, projectData ) => {
  *  { id: <package id, documentIds: <array of document ids>}
  * @returns Promise
  */
-export const deleteDocuments = async ( ids ) => {
+export const deleteDocuments = async ids => {
   console.log( 'Delete content', ids );
 
   const _result = {
     failures: [],
-    deleted: 0
+    deleted: 0,
   };
 
   const { id, documentIds } = ids;
 
   // 1. Delete all document type ES documents matching supplied query
   const results = await Promise.all(
-    documentIds.map( documentId => _deleteDocument( 'documents', 'document', documentId ) )
+    documentIds.map( documentId => _deleteDocument( 'documents', 'document', documentId ) ),
   );
 
   // 2. Collect deletion results for documents
-  results.forEach( ( result ) => {
+  results.forEach( result => {
     _result.failures = [..._result.failures, ...result.failures];
     _result.deleted += result.deleted;
   } );
@@ -294,13 +303,14 @@ export const deleteDocuments = async ( ids ) => {
   if ( _result.failures && _result.failures.length > 0 ) {
     return {
       error: 'EsShardFailure',
-      failures: _result.failures
+      failures: _result.failures,
     };
   }
   if ( !_result.deleted ) {
     return { error: 'EsDocsNotFound' };
   }
+
   return {
-    deleted: _result.deleted
+    deleted: _result.deleted,
   };
 };

@@ -9,18 +9,18 @@ const config = {
   target: 'node',
   output: {
     devtoolModuleFilenameTemplate: '[absolute-resource-path]',
-    devtoolFallbackModuleFilenameTemplate: '[absolute-resource-path]?[hash]'
+    devtoolFallbackModuleFilenameTemplate: '[absolute-resource-path]?[hash]',
   },
   resolve: {
     alias: {
       '~/helpers.test': path.resolve( __dirname, 'test/helpers.test' ),
       '~helpers.test': path.resolve( __dirname, 'test/helpers.test' ),
       '~api.test': path.resolve( __dirname, 'test/api.test' ),
-      '~/api.test': path.resolve( __dirname, 'test/api.test' )
-    }
+      '~/api.test': path.resolve( __dirname, 'test/api.test' ),
+    },
   },
   devtool: 'cheap-module-source-map',
-  externals: [nodeExternals()]
+  externals: [nodeExternals()],
 };
 
 module.exports = merge( baseConfig, config );

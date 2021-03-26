@@ -26,12 +26,13 @@ class Language extends AbstractModel {
         body: {
           query: {
             term: {
-              'locale.keyword': locale
-            }
-          }
-        }
+              'locale.keyword': locale,
+            },
+          },
+        },
       } )
       .catch( err => err );
+
     return result;
   }
 }

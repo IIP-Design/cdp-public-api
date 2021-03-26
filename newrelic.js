@@ -6,8 +6,8 @@
  */
 exports.config = {
   agent_enabled:
-    ( ( process.env.NEW_RELIC_LICENSE_KEY && process.env.NEW_RELIC_LICENSE_KEY !== '' ) || null ) !==
-    null,
+    ( ( process.env.NEW_RELIC_LICENSE_KEY && process.env.NEW_RELIC_LICENSE_KEY !== '' ) || null )
+    !== null,
   /**
    * Array of application names.
    */
@@ -18,7 +18,7 @@ exports.config = {
      * issues with the agent, 'info' and higher will impose the least overhead on
      * production applications.
      */
-    level: 'error'
+    level: 'error',
   },
   /**
    * When true, all request headers except for those listed in attributes.exclude
@@ -45,7 +45,7 @@ exports.config = {
       'response.headers.authorization',
       'response.headers.proxyAuthorization',
       'response.headers.setCookie*',
-      'response.headers.x*'
-    ]
-  }
+      'response.headers.x*',
+    ],
+  },
 };

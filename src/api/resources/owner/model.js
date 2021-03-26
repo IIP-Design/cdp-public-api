@@ -26,12 +26,13 @@ class Owner extends AbstractModel {
         body: {
           query: {
             term: {
-              'name.keyword': name
-            }
-          }
-        }
+              'name.keyword': name,
+            },
+          },
+        },
       } )
       .catch( err => err );
+
     return result;
   }
 }

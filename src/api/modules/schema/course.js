@@ -19,51 +19,51 @@ const courseSchema = {
       type: 'object',
       properties: {
         id: { type: 'integer' },
-        name: { type: 'string' }
-      }
+        name: { type: 'string' },
+      },
     },
     thumbnail: thumbnailSchema,
     language: languageSchema,
     lessons: {
       type: 'array',
-      default: [],
+      'default': [],
       items: {
         type: 'object',
         properties: {
           post_id: { type: 'integer' },
-          title: { type: 'string' }
-        }
-      }
+          title: { type: 'string' },
+        },
+      },
     },
     tags: {
       type: 'array',
-      default: [],
-      items: { type: 'string' }
+      'default': [],
+      items: { type: 'string' },
     },
     categories: {
       type: 'array',
-      default: [],
-      items: { type: 'string' }
+      'default': [],
+      items: { type: 'string' },
     },
     site_taxonomies: {
       type: 'object',
-      default: {},
+      'default': {},
       patternProperties: {
         '.*': {
           type: 'array',
-          default: [],
+          'default': [],
           items: {
             type: 'object',
             properties: {
               id: { type: 'integer' },
-              name: { type: 'string' }
+              name: { type: 'string' },
             },
-            required: ['name']
-          }
-        }
-      }
-    }
-  }
+            required: ['name'],
+          },
+        },
+      },
+    },
+  },
 };
 
 export default courseSchema;

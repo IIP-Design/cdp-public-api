@@ -20,7 +20,7 @@ router
     translateCategories( VideoModel ),
     controller.indexDocument,
     asyncTransferCtrl( VideoModel ),
-    controller.indexDocument
+    controller.indexDocument,
   );
 
 // Route: /v1/video/[uuid]
@@ -31,7 +31,7 @@ router
     asyncResponse(),
     transferCtrl( VideoModel ),
     translateCategories( VideoModel ),
-    controller.updateDocumentById
+    controller.updateDocumentById,
   )
   .get( controller.getDocumentById )
   .delete( deleteCtrl( VideoModel ), controller.deleteDocumentById );

@@ -1,6 +1,6 @@
-require( 'dotenv' ).config();
-
 import { Client } from 'elasticsearch';
+
+require( 'dotenv' ).config();
 
 // http-aws-es module needs to be updated as it is 3 versions behind
 const httpAwsEs = require( 'http-aws-es' );
@@ -15,15 +15,15 @@ if ( process.env.NODE_ENV === 'production' ) {
     amazonES: {
       region: process.env.AWS_REGION,
       accessKey: process.env.AWS_ELASTIC_ACCESS_KEY_ID,
-      secretKey: process.env.AWS_ELASTIC_SECRET
-    }
+      secretKey: process.env.AWS_ELASTIC_SECRET,
+    },
   };
 } else {
   connection = {
     host: process.env.ELASTICSEARCH_HOST,
     apiVersion: process.env.ES_API_VERSION,
     connectionClass: 'http',
-    log: ['error']
+    log: ['error'],
   };
 }
 

@@ -4,12 +4,14 @@ import Mime from 'mime-types';
 export const getQueryFromUuid = ( uuid = '' ) => {
   let obj = {};
   const args = uuid.split( '_' );
+
   if ( args.length === 2 ) {
     obj = {
       site: args[0],
-      post_id: args[1]
+      post_id: args[1],
     };
   }
+
   return obj;
 };
 
@@ -35,9 +37,9 @@ export const callback = ( req, data ) => {
           form: {
             error: 0,
             params: { ...req.params, ...req.queryArgs },
-            ...data
+            ...data,
           },
-          headers: { 'User-Agent': 'API' }
+          headers: { 'User-Agent': 'API' },
         },
         ( err, res, body ) => {
           if ( err ) {
@@ -52,13 +54,15 @@ export const callback = ( req, data ) => {
             req.callbackSent = true;
             console.log( 'callback response body', JSON.stringify( body, null, 2 ) );
           }
-        }
+        },
       );
     } else {
       console.log( 'callback not sent due to errors only requested' );
     }
+
     return true;
   }
+
   return false;
 };
 
@@ -94,11 +98,13 @@ export const getContentTypes = () => {
     'wks',
     'wps',
     'wpd',
-    'html'
+    'html',
   ];
-  allowedExts.forEach( ( ext ) => {
+
+  allowedExts.forEach( ext => {
     types.push( Mime.types[ext] );
   } );
+
   return types;
 };
 
@@ -108,14 +114,15 @@ export const getContentTypes = () => {
  * @param url
  * @return string
  */
-export const getTypeFromUrl = async ( url ) => {
-  const result = await new Promise( ( resolve ) => {
+export const getTypeFromUrl = async url => {
+  const result = await new Promise( resolve => {
     const encodedURI = encodeURI( url );
+
     if ( !encodedURI ) return resolve( null );
     Request.head(
       {
         url: encodedURI,
-        headers: { 'User-Agent': 'API' }
+        headers: { 'User-Agent': 'API' },
       },
       ( error, response ) => {
         if ( !error && response && response.headers && response.headers['content-type'] ) {
@@ -123,12 +130,14 @@ export const getTypeFromUrl = async ( url ) => {
             // Missing legitimate content type so use extension instead
             return resolve( Mime.lookup( encodedURI ) || null );
           }
+
           return resolve( response.headers['content-type'] );
         }
         if ( error ) console.error( error );
         resolve( null );
-      }
+      },
     );
   } );
+
   return result;
 };

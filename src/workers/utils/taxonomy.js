@@ -17,9 +17,10 @@ export const parseTermWithLocale = ( promise, locale = 'en-us' ) => promise
     if ( term && term.language && locale in term.language ) {
       return {
         id: term._id,
-        name: term.language[locale]
+        name: term.language[locale],
       };
     }
+
     return null;
   } )
   .catch( () => null );
@@ -32,7 +33,7 @@ export const parseTermWithLocale = ( promise, locale = 'en-us' ) => promise
  */
 export const findCategoryTerm = ( termName, locale = 'en-us' ) => parseTermWithLocale(
   taxonomy.findDocByTerm( termName, locale ),
-  locale
+  locale,
 );
 
 /**
@@ -43,7 +44,7 @@ export const findCategoryTerm = ( termName, locale = 'en-us' ) => parseTermWithL
  */
 export const findTagTerm = ( tag, locale = 'en-us' ) => parseTermWithLocale(
   taxonomy.findDocsBySynonymOrName( tag ),
-  locale
+  locale,
 );
 
 /**
@@ -57,6 +58,7 @@ export const convertCategories = async ( termNames, language ) => {
   const promises = termNames.map( termName => findCategoryTerm( termName, language.locale ) );
   const terms = await Promise.all( promises )
     .then( results => results.filter( result => result ) );
+
   return terms;
 };
 
@@ -71,6 +73,7 @@ export const convertTags = async ( tags, language ) => {
   const promises = tags.map( termName => findTagTerm( termName, language.locale ) );
   const terms = await Promise.all( promises )
     .then( results => results.filter( result => result ) );
+
   return terms;
 };
 
@@ -79,10 +82,12 @@ export const convertTags = async ( tags, language ) => {
  * @param unit
  * @returns {unit}
  */
-export const convertUnitTaxonomy = async ( unit ) => {
+export const convertUnitTaxonomy = async unit => {
   const unitData = { ...unit };
+
   unitData.categories = await convertCategories( unitData.categories, unit.language );
   unitData.tags = await convertCategories( unitData.tags, unit.language );
+
   return unitData;
 };
 
@@ -91,14 +96,16 @@ export const convertUnitTaxonomy = async ( unit ) => {
  * @param project
  * @returns {project}
  */
-export const convertProjectTaxonomies = async ( project ) => {
+export const convertProjectTaxonomies = async project => {
   const unitPromises = project.unit.map( convertUnitTaxonomy );
-  const unit = await Promise.all( unitPromises ).catch( ( err ) => {
+  const unit = await Promise.all( unitPromises ).catch( err => {
     console.error( err );
+
     return [];
   } );
+
   return {
     ...project,
-    unit
+    unit,
   };
 };
