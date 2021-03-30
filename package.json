@@ -14,7 +14,7 @@
     "dev:worker": "nodemon -e js -x babel-node --inspect=7001 src/workers/consumer.js",
     "lint": "eslint --ext .js --quiet ./",
     "start": "npm run start:main & npm run start:worker",
-    "start:worker": "node build/consumer.js",
+    "start:worker": "node -r newrelic build/consumer.js",
     "start:main": "node -r newrelic build/server.js"
   },
   "dependencies": {
