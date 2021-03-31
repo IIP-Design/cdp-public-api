@@ -1,13 +1,14 @@
-require('dotenv').config();
+import dotenv from 'dotenv';
 
-'use strict'
+dotenv.config();
+
 /**
  * New Relic agent configuration.
  *
  * See lib/config/default.js in the agent distribution for a more complete
  * description of configuration variables and their potential values.
  */
-exports.config = {
+module.exports.config = {
   /**
    * Only enable is envars are present
    */
@@ -34,7 +35,7 @@ exports.config = {
      *
      * @env NEW_RELIC_DISTRIBUTED_TRACING_ENABLED
      */
-    enabled: false
+    enabled: false,
   },
   logging: {
     /**
@@ -42,7 +43,7 @@ exports.config = {
      * issues with the agent, 'info' and higher will impose the least overhead on
      * production applications.
      */
-    level: 'info'
+    level: 'info',
   },
   /**
    * When true, all request headers except for those listed in attributes.exclude
@@ -69,7 +70,7 @@ exports.config = {
       'response.headers.authorization',
       'response.headers.proxyAuthorization',
       'response.headers.setCookie*',
-      'response.headers.x*'
-    ]
-  }
-}
+      'response.headers.x*',
+    ],
+  },
+};
