@@ -64,7 +64,7 @@ export const convertCategories = async ( termNames, language ) => {
 
 /**
  * Attempt to retrieve taxonomy terms from tags based on
- * synonym mathcing & language name match
+ * synonym matching & language name match
  * @param tags
  * @param language
  * @returns []

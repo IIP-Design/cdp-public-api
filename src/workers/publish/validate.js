@@ -10,9 +10,9 @@ const compileSchema = ( schema, useDefaults ) => {
   // 'removeAdditional' removes any properties during validation that are not in the schema
   // 'coerceTypes' will coerce to appropriate type.  using to coerce string number to number
   const ajv = new Ajv( { useDefaults, removeAdditional: 'all', coerceTypes: true } );
-    
-  ajv.addKeyword("documentSchema");
-  
+
+  ajv.addKeyword( 'documentSchema' );
+
   return ajv.compile( schema );
 };
 

@@ -118,7 +118,11 @@ export const getTypeFromUrl = async url => {
   const result = await new Promise( resolve => {
     const encodedURI = encodeURI( url );
 
-    if ( !encodedURI ) return resolve( null );
+    if ( !encodedURI ) {
+      resolve( null );
+
+      return;
+    }
     Request.head(
       {
         url: encodedURI,

@@ -20,7 +20,7 @@ const md5hash = path => new Promise( ( resolve, reject ) => {
  * properties inferred from the URL and the response's Content Type.
  * Must include requestId so that temp files can be tracked.
  *
- * Remember to add the cleanTempFiles middelware so that temp files are deleted.
+ * Remember to add the cleanTempFiles middleware so that temp files are deleted.
  *
  * @param url
  * @param requestId

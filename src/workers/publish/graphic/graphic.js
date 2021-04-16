@@ -1,6 +1,6 @@
 /**
  * The stuff in the workers directory may go into a separate container.
- * Puting within the api codebase for testing purposes
+ * Putting within the api codebase for testing purposes
  */
 
 import {} from 'dotenv/config';
