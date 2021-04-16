@@ -1,6 +1,7 @@
 import client from '../../../services/elasticsearch';
 import { validateSchema } from '../validate';
 import videoSchema from './schema';
+import { getElasticHitTotal } from '../../utils/elastic';
 
 import { convertProjectTaxonomies } from '../../utils/taxonomy';
 
@@ -13,7 +14,7 @@ const INDEXING_DOMAIN = process.env.INDEXING_DOMAIN || 'commons.america.gov';
  * @returns string  esId
  */
 const parseFindResult = result => {
-  if ( result && result.hits && result.hits.total === 1 ) { // should return only 1 unique result
+  if ( result && result.hits && getElasticHitTotal( result ) === 1 ) { // should return only 1 unique result
     const [hit] = result.hits.hits;
 
     return hit._id;

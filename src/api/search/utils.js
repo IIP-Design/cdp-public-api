@@ -1,5 +1,6 @@
 import { getSignedUrl } from 'workers/services/aws/s3';
 import cloneDeep from 'lodash.clonedeep';
+import parser from '../modules/elastic/parser';
 
 /**
  * Convert an S3 url into a signed URL
@@ -65,7 +66,7 @@ const isStaticIndex = hits => {
  */
 const isSearchIndex = response => {
   // By-pass aggregations and static indices
-  if ( response.aggregations || !response.hits.total ) {
+  if ( response.aggregations || !parser.getElasticHitTotal( response ) ) {
     return false;
   }
 

@@ -2,6 +2,7 @@ import client from '../../../services/elasticsearch';
 import { validateSchema } from '../validate';
 import graphicSchema from './schema';
 import { convertCategories, convertTags } from '../../utils/taxonomy';
+import { getElasticHitTotal } from '../../utils/elastic';
 
 const INDEXING_DOMAIN = process.env.INDEXING_DOMAIN || 'commons.america.gov';
 
@@ -12,7 +13,7 @@ const INDEXING_DOMAIN = process.env.INDEXING_DOMAIN || 'commons.america.gov';
  * @returns object  elasticsearch doc
  */
 const parseFindResult = result => {
-  if ( result && result.hits && result.hits.total === 1 ) {
+  if ( result && result.hits && getElasticHitTotal( result ) === 1 ) {
     // should return only 1 unique result
     const [hit] = result.hits.hits;
 

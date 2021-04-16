@@ -1,6 +1,7 @@
 import client from '../../services/elasticsearch';
 import parser from './elastic/parser';
 
+
 /**
  * Content Model abstraction ensures that the required methods
  * are implemented.
@@ -262,7 +263,7 @@ class AbstractModel {
   }
 
   /**
-   * Retreive all available documents sorted by the provided argument.
+   * Retrieve all available documents sorted by the provided argument.
    * Sort defaults to the document UID.
    * Append '.keyword' if the sort field is text based.
    * @param sort
@@ -284,7 +285,7 @@ class AbstractModel {
     // we have to collect them a chunk at a time.
     // NOTE: This may lose accuracy since we only have offset
     // available and not the search_from property.
-    if ( result.hits && result.hits.total > size ) {
+    if ( result.hits && parser.getElasticHitTotal( result ) > size ) {
       count += result.hits.hits.length;
       const collectHits = async () => {
         const next = await client
@@ -300,7 +301,7 @@ class AbstractModel {
         if ( next.hits.hits.length > 0 ) {
           count += next.hits.hits.length;
           result.hits.hits = result.hits.hits.concat( next.hits.hits );
-          if ( count < next.hits.total ) {
+          if ( count < parser.getElasticHitTotal( next ) ) {
             await collectHits();
           }
         }
@@ -313,7 +314,7 @@ class AbstractModel {
   }
 
   /**
-   * Retreive all documents sorted by UID.
+   * Retrieve all documents sorted by UID.
    * @returns {Promise}
    */
   getAllDocuments() {

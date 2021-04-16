@@ -3,20 +3,36 @@
   in an easier to manage format
  */
 
-// Need to determin is the result prop should be sent back
-export default {
+// Need to determine is the result prop should be sent back
+const parser = {
+  /**
+   * Elastic 7.9 changes the Elastic total property on the 'hits' props
+   * from a number to an object with 'value' & 'eq' props
+   * @param {Object} response elasticsearch de-structured response object
+   * @returns result total
+   */
+  getElasticHitTotal( { hits } ) {
+    return ( typeof hits.total === 'object' )
+      ? hits.total.value
+      : hits.total;
+  },
+
   parseUniqueDocExists() {
     return result => new Promise( ( resolve, reject ) => {
       if ( result.hits ) {
-        const { total } = result.hits;
+        const total = this.getElasticHitTotal( result );
 
         if ( !total ) {
-          return resolve( null );
+          resolve( null );
+
+          return;
         }
         if ( total === 1 ) {
           const hit = result.hits.hits[0];
 
-          return resolve( { _id: hit._id, ...hit._source } );
+          resolve( { _id: hit._id, ...hit._source } );
+
+          return;
         }
         reject( new Error( `Multiple results exist. Results:\r\n${JSON.stringify( result.hits, null, 2 )}` ) );
       } else {
@@ -27,10 +43,12 @@ export default {
 
   parseFindResult() {
     return result => new Promise( ( resolve, reject ) => {
-      if ( result.hits && result.hits.total > 0 ) {
+      if ( result.hits && this.getElasticHitTotal( result ) > 0 ) {
         const hits = result.hits.hits.map( hit => ( { _id: hit._id, ...hit._source } ) );
 
-        return resolve( hits );
+        resolve( hits );
+
+        return;
       }
       reject( new Error( 'Not found.' ) );
     } );
@@ -39,7 +57,9 @@ export default {
   parseGetResult( id ) {
     return result => new Promise( ( resolve, reject ) => {
       if ( result.found ) {
-        return resolve( { _id: result._id, ...result._source } );
+        resolve( { _id: result._id, ...result._source } );
+
+        return;
       }
       reject( id );
     } );
@@ -52,7 +72,9 @@ export default {
   parseUpdateResult( id, doc ) {
     return result => new Promise( ( resolve, reject ) => {
       if ( result._id ) {
-        return resolve( { _id: result._id, ...doc } );
+        resolve( { _id: result._id, ...doc } );
+
+        return;
       }
       reject( id );
     } );
@@ -61,7 +83,9 @@ export default {
   parseDeleteResult( id ) {
     return result => new Promise( ( resolve, reject ) => {
       if ( result.found ) {
-        return resolve( { id } );
+        resolve( { id } );
+
+        return;
       }
       reject( id );
     } );
@@ -69,7 +93,7 @@ export default {
 
   parseAllResult( result ) {
     return new Promise( resolve => {
-      if ( result.hits && result.hits.total > 0 ) {
+      if ( result.hits && this.getElasticHitTotal( result ) > 0 ) {
         const terms = result.hits.hits.reduce( ( acc, val ) => {
           acc.push( { _id: val._id, ...val._source } );
 
@@ -82,3 +106,5 @@ export default {
     } );
   },
 };
+
+export default parser;

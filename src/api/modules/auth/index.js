@@ -2,6 +2,7 @@ import { Router } from 'express';
 import jwt from 'jsonwebtoken';
 import cloneDeep from 'lodash.clonedeep';
 import vimeoRoutes from './vimeo';
+import parser from '../elastic/parser';
 
 const router = new Router();
 
@@ -54,7 +55,7 @@ export const hasValidToken = req => {
  * to empty.  Requires more robust testing so opted
  * for safer solution given time constraints
  * NOTE: Receiving cloned object as param so not cloning
- * in the function for perfomance reasons
+ * in the function for performance reasons
  * @param {object} obj object to traverse
  */
 const stripInternalFields = obj => {
@@ -83,7 +84,9 @@ export const stripInternalContent = response => {
 
   // by-pass aggregations
   if ( !_response.aggregations ) {
-    if ( _response.hits.total ) {
+    const total = parser.getElasticHitTotal( _response );
+
+    if ( total ) {
       const { hits } = _response.hits;
       const re = /^(taxonomy|language|owner)/;
 
@@ -110,7 +113,7 @@ export const stripInternalContent = response => {
           return { ...hit, _source: source };
         } );
 
-      // if hits existed intially but were stripped due to internal visibility
+      // if hits existed initially but were stripped due to internal visibility
       // flag, send internal indicator to the client
       if ( originalHits && !_hits.length ) {
         _response.internal = true;

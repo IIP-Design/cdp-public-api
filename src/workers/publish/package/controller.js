@@ -4,6 +4,7 @@ import { validateSchema } from '../validate';
 import packageSchema from './schema';
 import { convertCategories } from '../../utils/taxonomy';
 import { deleteS3Asset } from '../../services/aws/s3';
+import { getElasticHitTotal } from '../../utils/elastic';
 
 const INDEXING_DOMAIN = process.env.INDEXING_DOMAIN || 'commons.america.gov';
 const PRODUCTION_BUCKET = process.env.AWS_S3_PRODUCTION_BUCKET;
@@ -15,7 +16,7 @@ const PRODUCTION_BUCKET = process.env.AWS_S3_PRODUCTION_BUCKET;
  * @returns object  elasticsearch doc
  */
 const parseFindResult = result => {
-  if ( result && result.hits && result.hits.total === 1 ) {
+  if ( result && result.hits && getElasticHitTotal( result ) === 1 ) {
     // should return only 1 unique result
     const [hit] = result.hits.hits;
 
