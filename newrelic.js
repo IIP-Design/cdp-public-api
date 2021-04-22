@@ -8,7 +8,8 @@ dotenv.config();
  * See lib/config/default.js in the agent distribution for a more complete
  * description of configuration variables and their potential values.
  */
-module.exports.config = {
+// eslint-disable-next-line node/exports-style
+exports.config = {
   /**
    * Only enable is envars are present
    */
