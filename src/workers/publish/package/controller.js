@@ -267,7 +267,7 @@ export const createDocument = async ( projectId, projectData ) => {
 };
 
 /**
- * Delete a package and its associated documents from ES with specified package and dcuments ids
+ * Delete a package and its associated documents from ES with specified package and documents ids
  * @param {object} ids Package and associated document id
  *  { id: <package id, documentIds: <array of document ids>}
  * @returns Promise
