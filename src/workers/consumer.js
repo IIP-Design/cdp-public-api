@@ -7,6 +7,7 @@ import { getConsumerChannel } from './connection';
 import video from './publish/video/video';
 import graphic from './publish/graphic/graphic';
 import pkg from './publish/package/package';
+import playbook from './publish/playbook/playbook';
 import document from './utils/document';
 
 async function processRequest( channel, msg, processFunc ) {
@@ -53,6 +54,10 @@ const consumePublishCreate = async () => {
         createFn = graphic.handleCreate;
         break;
 
+      case 'create.playbook':
+        createFn = playbook.handleCreate;
+        break;
+
       default:
         console.log( 'Default' );
     }
@@ -85,6 +90,10 @@ const consumePublishUpdate = async () => {
         updateFn = graphic.handleUpdate;
         break;
 
+      case 'update.playbook':
+        updateFn = playbook.handleUpdate;
+        break;
+
       default:
         console.log( 'Default' );
     }
@@ -115,6 +124,10 @@ const consumePublishDelete = async () => {
 
       case 'delete.graphic':
         deleteFn = graphic.handleDelete;
+        break;
+
+      case 'delete.playbook':
+        deleteFn = playbook.handleDelete;
         break;
 
       default:
