@@ -82,8 +82,10 @@ export const copyS3AllAssets = async ( dir, fromBucket, toBucket ) => {
 
   if ( listedObjects.Contents.length === 0 ) return;
 
-  listedObjects.Contents.forEach( ( { Key } ) => {
-    copyS3Asset( Key, fromBucket, toBucket );
+  listedObjects.Contents.forEach( ( { Key } ) => { // for each do not await
+    copyS3Asset( Key, fromBucket, toBucket ).catch( err => {
+      console.log( `Error, unable to copy asset: ${err?.message}` );
+    } );
   } );
 
   // If more than a page of files, copy next batch
