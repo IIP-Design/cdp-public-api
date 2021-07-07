@@ -10,6 +10,7 @@ const schema = {
     desc: { type: 'string' },
     visibility: { type: 'string' },
     published: { type: 'string' },
+    initialPublished: { type: 'string' },
     modified: { type: 'string' },
     created: { type: 'string' },
     owner: { type: 'string' },
