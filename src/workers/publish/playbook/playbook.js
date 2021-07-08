@@ -15,13 +15,14 @@ async function handleCreate( data ) {
   console.log( '[√] Handle a publish PLAYBOOK create request' );
 
   let projectId;
-  let projectJson;
+  let projectJson;  // json string
+  let projectData;  // json object
   let projectDirectory;
   let creation;
 
   try {
     ( { projectId, projectJson, projectDirectory } = data );
-    const projectData = JSON.parse( projectJson );
+    projectData = JSON.parse( projectJson );
 
     // create ES document
     creation = await createDocument( projectId, projectData );
@@ -41,12 +42,16 @@ async function handleCreate( data ) {
     throw new Error( err );
   }
 
+  // return ES published dates to sync dates on graphQL db
+  const { initialPublished } = projectData;
+
   // publish results to channel
   await publishToChannel( {
     exchangeName: 'publish',
     routingKey: 'result.create.playbook',
     data: {
       projectId,
+      initialPublished,
     },
   } );
 
