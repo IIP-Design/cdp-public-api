@@ -128,8 +128,10 @@ async function handleDelete( data ) {
   console.log( '[x] PUBLISHED publish PLAYBOOK delete result' );
 }
 
-export default {
+const playbookHandlers = {
   handleCreate,
   handleUpdate,
   handleDelete,
 };
+
+export default playbookHandlers;
