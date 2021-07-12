@@ -99,7 +99,7 @@ export const updateDocument = async ( projectId, projectData ) => {
     return { error: 'EsDocNotFound' };
   }
 
-  const { categories, tags } = projectData;
+  const { categories, policy, tags } = projectData;
   const _projectData = { ...projectData };
 
   if ( categories ) {
@@ -108,6 +108,12 @@ export const updateDocument = async ( projectId, projectData ) => {
 
   if ( tags ) {
     _projectData.tags = await convertTags( tags, { locale: 'en-us' } );
+  }
+
+  // Explicitly set policy to null if not provided,
+  // otherwise value will not update when a policy is removed.
+  if ( !policy ) {
+    _projectData.policy = null;
   }
 
   return _updateDocument( _projectData, esPlaybook._id );
