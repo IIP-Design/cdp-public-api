@@ -40,6 +40,8 @@ const schema = {
           visibility: { type: 'string' },
           editable: { type: 'boolean' },
           filename: { type: 'string' },
+          filesize: { type: 'number' },
+          filetype: { type: 'string' },
           url: { type: 'string' },
           language: languageSchema,
         },
