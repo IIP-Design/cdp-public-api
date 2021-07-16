@@ -121,6 +121,7 @@ export const stripInternalContent = response => {
 
       // replace the hits prop with stripped content
       _response.hits.hits = _hits;
+      _response.hits.total.value = _hits.length;
     }
   }
 

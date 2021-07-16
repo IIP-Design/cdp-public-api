@@ -9,6 +9,8 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 _This sections lists changes committed since most recent release_
 
 **Fixed:**
+
+- Update total hits count when filtering out internal content
 - New Relic monitoring
 
 # [5.2.2](https://github.com/IIP-Design/cdp-public-api/compare/v5.2.1...v5.2.2)(2021-03-18)
