@@ -1,6 +1,6 @@
 {
   "name": "cdp-public-api",
-  "version": "5.2.2",
+  "version": "5.3.0",
   "main": "server.js",
   "author": "U.S. Department of State, Bureau of Global Public Affairs Digital Lab <gpa-lab@america.gov>",
   "description": "Rest API that manages the inter-connections between the Lab's Content Distribution Platform microservices",
