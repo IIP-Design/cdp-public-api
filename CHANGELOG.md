@@ -1,87 +1,122 @@
 # Change Log
 
-##### All notable changes to this project will be documented in this file.
+**All notable changes to this project will be documented in this file.**
 
-The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
-and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
+The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/), and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
 ## [Unreleased](https://github.com/IIP-Design/cdp-public-api/compare/v5.2.2...HEAD)
+
 _This sections lists changes committed since most recent release_
+
+# [5.3.0](https://github.com/IIP-Design/cdp-public-api/compare/v5.2.2...v5.3.0) (2021-07-17)
+
+**Added:**
+
+- Support for Elasticsearch version 7.x
+- Playbook content type
+
+**Changed:**
+
+- Improved error handling for S3 uploads
 
 **Fixed:**
 
 - Update total hits count when filtering out internal content
-- New Relic monitoring
+- New Relic application performance monitoring initialization
+- Allow for the use of the `documentSchema` keyword when validating schemas
 
-# [5.2.2](https://github.com/IIP-Design/cdp-public-api/compare/v5.2.1...v5.2.2)(2021-03-18)
+**Security:**
+
+- Update JavaScript dependencies
+
+# [5.2.2](https://github.com/IIP-Design/cdp-public-api/compare/v5.2.1...v5.2.2) (2021-03-18)
+
 **Added:**
+
 - New admin priority tags
 
-# [5.2.1](https://github.com/IIP-Design/cdp-public-api/compare/v5.2.0...v5.2.1)(2021-03-16)
+# [5.2.1](https://github.com/IIP-Design/cdp-public-api/compare/v5.2.0...v5.2.1) (2021-03-16)
+
 **Fixed:**
+
 - API error due to null search result
 
-# [5.2.0](https://github.com/IIP-Design/cdp-public-api/compare/v5.1.0...v5.2.0)(2020-09-14)
+# [5.2.0](https://github.com/IIP-Design/cdp-public-api/compare/v5.1.0...v5.2.0) (2020-09-14)
 
 **Added:**
+
 - signedUrl support for embedded modules
 - The use field to the `videoSchema` and its mapping
 
-# [5.1.0](https://github.com/IIP-Design/cdp-public-api/compare/v5.0.0...v5.1.0)(2020-07-15)
+# [5.1.0](https://github.com/IIP-Design/cdp-public-api/compare/v5.0.0...v5.1.0) (2020-07-15)
 
 **Fixed:**
+
 - API error due to invalid characters in the Content-Disposition filename
 
-# [5.0.0](https://github.com/IIP-Design/cdp-public-api/compare/v4.2.0...v5.0.0)(2020-07-10)
+# [5.0.0](https://github.com/IIP-Design/cdp-public-api/compare/v4.2.0...v5.0.0) (2020-07-10)
+
 **Added:**
+
 - descPublic and descInternal properties to the graphic schema
 - Graphic publishing
 - Functionality to strip internal field content if valid token is not present 
 
 **Removed:**
+
 - The desc property from the graphic schema
 
 ## 4.2.0
+
 **Added:**
+
 - Authenticated task/zip route and handler that returns a zip file of assets in a S3 directory
 
 ## 4.1.1
+
 **Added:**
+
 - Added repatriation tag with translations
 
 **Changed:**
+
 - Remove special characters from document thumbnail filenames on save
 
 ## 4.1.0
 
 **Added:**
+
 - Add `created` prop to elasticsearch package model
 
 ## 4.0.0
 
 **Features Added:**
+
 - Worker thread responsible for extracting text/html from word documents and generating an image thumbnail
 - Added package and document publishing
 - Added s3 upload for generated thumbnails
 - Added coronavirus tag to taxonomy
 
 **Changed**
+
 - Moved Rabbit publish consumer up one level to handle different queue types
 
 ## 3.0.0
 
 **Features Added:**
+
 - Added visibility property to files.
 - Worker thread responsible for fielding requests from publisher via RabbitMQ.
 - Delete video functionality.
 
 **Changed:**
+
 - Video schema accepts string based post_id
-- Updated download endpoint to accomodate filename at the end of the URL instead of built into the encoded JSON to prevent encode errors caused by non-latin characters.
-- Added backwards compatability to the download endpoint.
+- Updated download endpoint to accommodate filename at the end of the URL instead of built into the encoded JSON to prevent encode errors caused by non-latin characters.
+- Added backwards compatibility to the download endpoint.
 - Added thumbnail to unit items in the video schema so that it is accepted in incoming data.
 - Added supportFiles to video schema.
-- Updated download route with regex in order to accomodate a parameter argument that can have slashes.
+- Updated download route with regex in order to accommodate a parameter argument that can have slashes.
 - Updated the download controller to also look for unnamed parameters captured by a regex matched request route.
 - Updated env var key names.
 - Updated dependencies.
@@ -143,7 +178,7 @@ _This sections lists changes committed since most recent release_
 - Updated the API to include the "web" or "broadcast" video property.
 - Fixed tags getting duplicated after multiple updates.
 - Added Vimeo implementation.
-- Uncommented /auth routes so we can use /auth/vimeo.
+- Un-commented /auth routes so we can use /auth/vimeo.
 - Added env var for enabling/disabling /auth/register: ALLOW_REGISTER=false/true
 - Added vimeo auth routes (/auth/vimeo and /auth/vimeo/callback).
 - Added getUnit function to abstractModel.
